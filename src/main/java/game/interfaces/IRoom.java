@@ -2,6 +2,7 @@ package game.interfaces;
 
 import dataStructures.implementations.ArrayUnorderedList;
 import game.character.Enemy;
+import game.character.Entity;
 import game.character.Player;
 import game.items.Item;
 
@@ -20,6 +21,4 @@ public interface IRoom {
     public boolean hasPlayer();
     
     public Player getPlayer();
-
-    public void confrontation(Character priorityCharacter);
 }

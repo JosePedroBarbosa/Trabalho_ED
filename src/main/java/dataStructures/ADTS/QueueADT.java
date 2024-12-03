@@ -1,6 +1,6 @@
 package dataStructures.ADTS;
 
-import exceptions.EmptyCollectionException;
+import dataStructures.exceptions.EmptyCollectionException;
 
 public interface QueueADT<T> {
 

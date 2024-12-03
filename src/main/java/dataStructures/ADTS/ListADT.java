@@ -1,7 +1,9 @@
 package dataStructures.ADTS;
 
 import java.util.Iterator;
-import exceptions.*;
+
+import dataStructures.exceptions.ElementNotFoundException;
+import dataStructures.exceptions.EmptyCollectionException;
 
 /**
  * The ListADT interface defines the general methods for a list.

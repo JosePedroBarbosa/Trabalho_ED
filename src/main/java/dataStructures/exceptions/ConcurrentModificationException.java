@@ -1,4 +1,4 @@
-package exceptions;
+package dataStructures.exceptions;
 
 /**
  * ConcurrentModificationException is an exception that is thrown when a collection is modified while an iterator is's in use.

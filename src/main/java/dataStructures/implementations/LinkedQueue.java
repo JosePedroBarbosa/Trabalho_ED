@@ -1,7 +1,7 @@
 package dataStructures.implementations;
 
 import dataStructures.ADTS.QueueADT;
-import exceptions.EmptyCollectionException;
+import dataStructures.exceptions.EmptyCollectionException;
 
 public class LinkedQueue<T> implements QueueADT<T> {
 

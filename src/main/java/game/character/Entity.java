@@ -1,10 +1,10 @@
 package game.character;
 
-import implementations.Game;
+import game.settings.GameSettings;
 import game.map.Room;
-import game.interfaces.ICharacter;
+import game.interfaces.IEntity;
 
-public abstract class Character implements ICharacter {
+public abstract class Entity implements IEntity {
 
     private static int nextId = 0;
     private final int id;
@@ -13,12 +13,20 @@ public abstract class Character implements ICharacter {
     protected final int power;
     protected Room currentRoom;
 
-    public Character(String name, int power, Room currentRoom) {
+    public Entity(String name, int power, Room currentRoom) {
         this.id = nextId++;
         this.name = name;
-        this.health = Game.getMaxCharacterLife();
+        this.health = GameSettings.getInitialCharacterHealth();
         this.power = power;
         this.currentRoom = currentRoom;
+    }
+
+    public Entity(String name, int power) {
+        this.id = nextId++;
+        this.name = name;
+        this.health = GameSettings.getInitialCharacterHealth();
+        this.power = power;
+        this.currentRoom = null;
     }
 
     @Override
@@ -42,12 +50,11 @@ public abstract class Character implements ICharacter {
     }
 
     @Override
-    public void setCurrentRoom(Room currentRoom) {
-        if (currentRoom == null) {
+    public void setCurrentRoom(Room nextRoom) {
+        if (nextRoom == null) {
             throw new IllegalArgumentException("The Element Cant Be Null");
         }
-        this.currentRoom = currentRoom;
-
+        this.currentRoom = nextRoom;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package dataStructures.implementations;
 
 import dataStructures.ADTS.StackADT;
-import exceptions.EmptyCollectionException;
+import dataStructures.exceptions.EmptyCollectionException;
 
 /**
  *

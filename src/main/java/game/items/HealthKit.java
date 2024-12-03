@@ -1,11 +1,13 @@
 package game.items;
 
+import game.map.Room;
+
 public class HealthKit extends Item {
 
     private int recoveredPoints;
 
-    public HealthKit(int recoveredPoints) {
-        super("Health Kit");
+    public HealthKit(int recoveredPoints, Room currentRoom) {
+        super("Health Kit", currentRoom);
         this.recoveredPoints = recoveredPoints;
     }
 

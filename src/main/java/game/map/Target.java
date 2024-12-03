@@ -1,11 +1,11 @@
 package game.map;
 
-import game.map.Room;
 import game.interfaces.ITarget;
 
 public class Target implements ITarget {
     private Room currentRoom;
     private String type;
+    private boolean pickedUp;
 
     public Target(Room currentRoom, String type){
         this.currentRoom = currentRoom;
@@ -32,5 +32,13 @@ public class Target implements ITarget {
             throw new IllegalArgumentException("Room cannot be null.");
         }
         this.currentRoom = currentRoom;
+    }
+
+    public void setPickedUp(boolean pickedUp){
+        this.pickedUp = pickedUp;
+    }
+
+    public boolean isPickedUp(){
+        return pickedUp;
     }
 }

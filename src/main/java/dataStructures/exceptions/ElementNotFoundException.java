@@ -1,4 +1,4 @@
-package exceptions;
+package dataStructures.exceptions;
 
 /**
  * ElementNotFoundException is an exception that is thrown when an element is not found in a collection.

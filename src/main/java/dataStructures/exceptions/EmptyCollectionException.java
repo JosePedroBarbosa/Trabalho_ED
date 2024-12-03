@@ -1,4 +1,4 @@
-package exceptions;
+package dataStructures.exceptions;
 
 /**
  * EmptyCollectionException is thrown when a collection is empty

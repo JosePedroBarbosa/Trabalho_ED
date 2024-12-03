@@ -1,11 +1,13 @@
 package game.items;
 
+import game.map.Room;
+
 public class Shield extends Item {
 
     private int extraPoints;
 
-    public Shield(int extraPoints) {
-        super("Shield");
+    public Shield(int extraPoints,Room currentRoom) {
+        super("Shield", currentRoom);
         this.extraPoints = extraPoints;
     }
 

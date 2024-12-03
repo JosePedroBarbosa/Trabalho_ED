@@ -10,11 +10,6 @@ public interface IMap {
 
     public void insertRoom(Room room);
 
-    public void insterConnection(Room room1, Room room2);
-
-    public void selectTargetRoom(Room targetRoom);
-
-    /*LinkedList<IRoom>*//*Iterator*//*ArrayList<IRoom>*/
-    public void setEntraces(Room[] entraces);
+    public void insertConnection(Room room1, Room room2);
 
 }

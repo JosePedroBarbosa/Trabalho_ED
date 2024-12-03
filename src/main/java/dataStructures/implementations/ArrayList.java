@@ -1,8 +1,8 @@
 package dataStructures.implementations;
 
 import dataStructures.ADTS.ListADT;
-import exceptions.ConcurrentModificationException;
-import exceptions.EmptyCollectionException;
+import dataStructures.exceptions.ConcurrentModificationException;
+import dataStructures.exceptions.EmptyCollectionException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -308,5 +308,9 @@ public abstract class ArrayList<T> implements ListADT<T> {
             }
             okToRemove = false;
         }
+    }
+
+    public T getByIndex(int index){
+        return this.list[index];
     }
 }

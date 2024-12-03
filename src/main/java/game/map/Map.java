@@ -3,8 +3,8 @@ package game.map;
 import dataStructures.implementations.Graph;
 import game.interfaces.IMap;
 
-public class Map implements IMap {
 
+public class Map implements IMap {
     Graph<Room> map = new Graph<>();
 
     @Override
@@ -13,20 +13,15 @@ public class Map implements IMap {
     }
 
     @Override
-    public void insterConnection(Room room1, Room room2) {
+    public void insertConnection(Room room1, Room room2) {
         map.addEdge(room1, room2);
     }
 
-    @Override
-    public void selectTargetRoom(Room targetRoom) {
-
+    public void printMap(){
+        map.printGraph();
     }
 
-    @Override
-    public void setEntraces(Room[] entraces) {
-
+    public Graph<Room> getMap() {
+        return map;
     }
-
-
-
 }

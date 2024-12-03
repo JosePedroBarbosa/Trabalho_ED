@@ -3,7 +3,7 @@ package game.items;
 import dataStructures.implementations.ArrayStack;
 import game.exceptions.EmptyBackPackException;
 import game.exceptions.FullBackPackException;
-import implementations.Game;
+import game.settings.GameSettings;
 import game.interfaces.IBackpack;
 
 public class Backpack implements IBackpack {
@@ -11,11 +11,11 @@ public class Backpack implements IBackpack {
     private ArrayStack<Item> inventory;
 
     public Backpack() {
-        this.inventory = new ArrayStack<>(Game.getMaxBackpackCapacity());
+        this.inventory = new ArrayStack<>(GameSettings.getMaxBackpackCapacity());
     }
 
     @Override
-    public Item useItem() throws EmptyBackPackException {
+    public Item useBackpackItem() throws EmptyBackPackException {
         if (inventory.isEmpty()) {
             throw new EmptyBackPackException("No items to use.");
         }
@@ -27,11 +27,15 @@ public class Backpack implements IBackpack {
         if (item == null) {
             throw new IllegalArgumentException("Item cannot be null.");
         }
-        if (inventory.size() == Game.getMaxBackpackCapacity()) {
+        if (inventory.size() == GameSettings.getMaxBackpackCapacity()) {
             throw new FullBackPackException("Maximum number of items reached.");
         }
 
         inventory.push(item);
+    }
+
+    public int getBackpackSize(){
+        return inventory.size();
     }
 
 }

@@ -1,4 +1,4 @@
-package exceptions;
+package dataStructures.exceptions;
 
 /**
  * IllegalArgumentException is thrown when an argument is not valid.

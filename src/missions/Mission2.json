@@ -1,0 +1,55 @@
+{
+    "cod-missao": "Águia Vermelha",
+    "versao": 2,
+    "edificio": [
+        "Mirante", "Terraço", "Escada Sierra", "Refeitório", "Vestuário", "Dormitórios",
+        "Central de Comunicações", "Escada Foxtrot", "Corredor Beta", "Corredor Delta", 
+        "Sala de Reuniões", "Auditório", "Central de Veículos", "WC", "Oficina", 
+        "Posto Médico", "Jardim", "Biblioteca", "Sala das Máquinas", "Receção", 
+        "Sala de Visitas", "Corredor Lambda"
+    ],
+    "ligacoes": [
+        ["Central de Comunicações", "Mirante"],
+        ["Mirante", "Terraço"],
+        ["Terraço", "Escada Sierra"],
+        ["Escada Sierra", "Refeitório"],
+        ["Vestuário", "Dormitórios"],
+        ["Dormitórios", "Corredor Delta"],
+        ["Corredor Delta", "Refeitório"],
+        ["Corredor Delta", "Escada Foxtrot"],
+        ["Escada Foxtrot", "Corredor Beta"],
+        ["Escada Foxtrot", "Central de Comunicações"],
+        ["Central de Comunicações", "Central de Veículos"],
+        ["Central de Veículos", "Receção"],
+        ["Receção", "WC"],
+        ["WC", "Sala das Máquinas"],
+        ["Sala das Máquinas", "Corredor Lambda"],
+        ["Corredor Delta", "Auditório"],
+        ["Auditório", "Sala de Reuniões"],
+        ["Auditório", "Corredor Beta"],
+        ["Corredor Beta", "Posto Médico"],
+        ["Posto Médico", "Corredor Lambda"],
+        ["Corredor Lambda", "Oficina"],
+        ["Escada Foxtrot", "Corredor Lambda"],
+        ["Corredor Lambda", "Jardim"],
+        ["Jardim", "Sala de Visitas"],
+        ["Sala de Visitas", "Biblioteca"],
+        ["Biblioteca", "Receção"]
+    ],
+    "inimigos": [
+        {"nome": "Sombra Vermelha", "poder": 30, "divisao": "Sala de Reuniões"},
+        {"nome": "Alfa Predador", "poder": 10, "divisao": "Oficina"},
+        {"nome": "Caçador Letal", "poder": 20, "divisao": "Mirante"},
+        {"nome": "Falcão Sombrio", "poder": 25, "divisao": "Escada Sierra"},
+        {"nome": "Corvo de Guerra", "poder": 15, "divisao": "Sala das Máquinas"}
+    ],
+    "entradas-saidas": ["Receção", "Jardim", "Mirante"],
+    "alvo": {"divisao": "Sala de Reuniões", "tipo": "Documentos Secretos"},
+    "itens": [
+        {"divisao": "WC", "pontos-extra": 40, "tipo": "colete"},
+        {"divisao": "Vestuário", "pontos-extra": 20, "tipo": "colete"},
+        {"divisao": "Refeitório", "pontos-extra": 40, "tipo": "kit de vida"},
+        {"divisao": "Posto Médico", "pontos-recuperados": 50, "tipo": "kit de vida"},
+        {"divisao": "Central de Comunicações", "pontos-recuperados": 20, "tipo": "kit de vida"}
+    ]
+}

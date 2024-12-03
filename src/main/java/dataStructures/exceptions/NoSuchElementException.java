@@ -1,4 +1,4 @@
-package exceptions;
+package dataStructures.exceptions;
 
 /**
  * NoSuchElementException is thrown when an element is not found

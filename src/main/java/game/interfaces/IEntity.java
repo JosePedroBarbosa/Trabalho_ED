@@ -6,7 +6,7 @@ import game.map.Room;
  * The ICharacter interface defines the basic contract for any character in the
  * game.
  */
-public interface ICharacter {
+public interface IEntity {
 
     /**
      * Retrieves the unique identifier (ID) of the character.
@@ -40,10 +40,10 @@ public interface ICharacter {
      * Sets the character's current room to a specified location. This method is
      * used to move the character from one room to another within the game.
      *
-     * @param currentRoom the new Room object where the character should be
+     * @param nextRoom the new Room object where the character should be
      * placed. Cannot be null.
      */
-    public void setCurrentRoom(Room currentRoom);
+    public void setCurrentRoom(Room nextRoom);
 
     /**
      * Checks if the character is currently alive.
@@ -70,7 +70,7 @@ public interface ICharacter {
     /**
      * Performs an attack on another character, causing damage.
      */
-    public void atack();
+    public void attack();
 
     /**
      * Retrieves the current power level of the character. Power represents the
