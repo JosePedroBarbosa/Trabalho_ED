@@ -1,7 +1,10 @@
 package game.menus;
 
+import dataStructures.implementations.ArrayOrderedList;
+import dataStructures.implementations.ArrayUnorderedList;
 import game.data.ExportData;
 import game.data.ImportData;
+import game.data.SimulationResults;
 import game.exceptions.NoMissionInstantiated;
 import game.mission.Mission;
 import game.mission.Simulation;
@@ -34,12 +37,13 @@ public class Menus {
     }
 
     public static void missionMenu(Scanner scanner) {
-
         boolean running = true;
+
         while (running) {
             System.out.println("===== IMF Simulator =====");
             System.out.println("1. Start Simulation");
             System.out.println("2. Settings");
+            System.out.println("3. Manual Simulation Results");
             System.out.println("0. Exit");
             System.out.print("Choose an option: ");
 
@@ -59,6 +63,9 @@ public class Menus {
                         break;
                     case 2:
                         manageSettingsMenu(scanner);
+                        break;
+                    case 3:
+                        manageManualSimulationsMenu(scanner);
                         break;
                     case 0:
                         running = false;
@@ -208,8 +215,56 @@ public class Menus {
             }
 
         }
-
     }
+
+    public static void manageManualSimulationsMenu(Scanner scanner) {
+        int choice = -1;
+
+        ArrayUnorderedList<String> importedCodes = ImportData.importSimulationCodesResults();
+
+        while(choice != 0) {
+            System.out.println("===== Available Manual Simulations =====");
+
+            if(importedCodes.isEmpty()){
+                System.out.println("No simulations available.");
+            }else {
+                int codesCounter = 1;
+                for(String code : importedCodes) {
+                    if(code != null){
+                        System.out.println(codesCounter + ". " + code);
+                        codesCounter++;
+                    }
+                }
+            }
+
+            System.out.println("0. Back");
+            System.out.print("Choose an option: ");
+
+
+            try{
+                choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 0) {
+                    System.out.println("Returning to Main Menu...");
+                } else if (choice > 0 && choice <= importedCodes.size()) {
+                    String selectedCode = importedCodes.getByIndex(choice - 1);
+                    System.out.println("You selected the simulation with code: " + selectedCode);
+                    ArrayOrderedList<SimulationResults> simulationResults = ImportData.importSimulationResultsByCode(selectedCode);
+
+                    System.out.println(simulationResults.toString());
+                } else {
+                    System.out.println("Invalid option. Please try again.");
+                }
+
+            }catch(InputMismatchException ex){
+                System.out.println("Invalid option. Please try again.");
+                scanner.nextLine();
+            }
+
+        }
+    }
+
 
     private static boolean changeBackpackCapacity(Scanner scanner) {
         System.out.print("Insert Backpack Capacity: ");

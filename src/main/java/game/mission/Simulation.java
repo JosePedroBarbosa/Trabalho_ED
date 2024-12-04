@@ -4,6 +4,7 @@ import dataStructures.implementations.ArrayUnorderedList;
 import game.character.Enemy;
 import game.character.Entity;
 import game.character.Player;
+import game.data.ExportData;
 import game.data.MissionDisplay;
 import game.exceptions.EmptyBackPackException;
 import game.exceptions.PlayerLeftException;
@@ -12,14 +13,19 @@ import game.items.Item;
 import game.map.Room;
 import game.settings.GameSettings;
 
-import java.sql.SQLOutput;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Simulation {
+    private static boolean missionSuccess;
+    private static ArrayUnorderedList<Room> simulationRoute;
+
     public static void manualSimulation(Mission mission, Scanner scanner) {
-        //MissionDisplay.showImage(scanner);
+        missionSuccess = false;
+        simulationRoute = new ArrayUnorderedList<>();
+
+        MissionDisplay.showImage(scanner);
         setupInitialPhase(mission, scanner);
 
         printBestPathToTarget(mission);
@@ -38,9 +44,15 @@ public class Simulation {
 
             if (!(mission.getPlayer().isAlive())) {
                 System.out.println("To Cruz died. Mission failed!");
+                missionSuccess = false;
                 gameOver = true;
             }
         }
+        ExportData.saveManualSimulationToJson(mission, simulationRoute, missionSuccess);
+    }
+
+    public static void autoSimulation(Mission mission, Scanner scanner){
+
     }
 
     public static void setupInitialPhase(Mission mission, Scanner scanner) {
@@ -49,6 +61,9 @@ public class Simulation {
         showAvailableRooms(mission.getEntriesAndExits(), "Available entrances:");
         Room entrance = selectRoom(mission.getEntriesAndExits(), scanner, "Select an Entrance: ");
         mission.getPlayer().setCurrentRoom(entrance);
+
+        //add room to the simulation Route
+        simulationRoute.addToRear(entrance);
 
         if(entrance.hasEnemies()){
             System.out.println("Enemies in the room! Player as priority in confrontation.");
@@ -105,8 +120,10 @@ public class Simulation {
             } catch (PlayerLeftException ex) {
                 if(mission.getTarget().isPickedUp()) {
                     System.out.println("To Cruz left the building with the Target. Mission completed!");
+                    missionSuccess = true;
                 }else {
                     System.out.println("To Cruz left the building without the Target. Mission failed!");
+                    missionSuccess = false;
                 }
                 return true;
             }
@@ -169,6 +186,9 @@ public class Simulation {
         player.getCurrentRoom().removePlayer();
         player.setCurrentRoom(selectedNeighbour);
         player.getCurrentRoom().setPlayer(player);
+
+        //add room to the simulation Route
+        simulationRoute.addToRear(selectedNeighbour);
 
         //if the room have any items the player should use the shield and try to stack the kits.
         collectItems(player, selectedNeighbour);

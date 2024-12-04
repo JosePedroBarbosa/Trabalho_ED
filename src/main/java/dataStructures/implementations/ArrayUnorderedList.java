@@ -1,5 +1,7 @@
 package dataStructures.implementations;
 
+import dataStructures.exceptions.EmptyCollectionException;
+import dataStructures.exceptions.NoSuchElementException;
 import dataStructures.ADTS.UnorderedListADT;
 
 /**
@@ -8,7 +10,6 @@ import dataStructures.ADTS.UnorderedListADT;
  * @param <T> the type of elements stored in the list
  */
 public class ArrayUnorderedList<T> extends ArrayList<T> implements UnorderedListADT<T> {
-
     /**
      * Default constructor that initializes the list with a default capacity.
      */
@@ -35,17 +36,15 @@ public class ArrayUnorderedList<T> extends ArrayList<T> implements UnorderedList
             throw new IllegalArgumentException("Element cannot be null");
         }
 
-        if (this.count == this.list.length) {
-            this.expandCapacity();
+        if (size() == list.length){
+            expandCapacity();
         }
-
-        // Move os elementos para a direita (ter espaço na posição 0 para o novo elemento)
-        for (int i = this.count; i > 0; i--){
-            this.list[i] = this.list[i - 1];
+        for (int i = size(); i > 0; i--) {
+            list[i] = list[i - 1];
         }
-
-        this.list[0] = element;
-        count++;
+        list[0] = element;
+        size++;
+        modCount++;
     }
 
     /**
@@ -60,13 +59,14 @@ public class ArrayUnorderedList<T> extends ArrayList<T> implements UnorderedList
             throw new IllegalArgumentException("Element cannot be null");
         }
 
-        if (this.count == this.list.length) {
-            this.expandCapacity();
+        if (size() == list.length){
+            expandCapacity();
         }
-
-        this.list[this.count] = element;
-        count++;
+        list[size()] = element;
+        size++;
+        modCount++;
     }
+
 
     /**
      * Adds the specified element after the target element in this unordered list.
@@ -77,33 +77,30 @@ public class ArrayUnorderedList<T> extends ArrayList<T> implements UnorderedList
      * @throws IllegalArgumentException if the target element is not found
      */
     @Override
-    public void addAfter(T element, T target) {
+    public void addAfter(T element, T target) throws EmptyCollectionException, NoSuchElementException {
         if (element == null || target == null) {
             throw new IllegalArgumentException("Element or target cannot be null");
         }
 
-        int targetIndex = -1;
-
-        for(int i = 0; i < this.count; i++){
-            if(this.list[i].equals(target)){
-                targetIndex = i;
-                break;
-            }
+        if (isEmpty()){
+            throw new EmptyCollectionException();
+        }
+        if (size() == list.length){
+            expandCapacity();
         }
 
-        if (targetIndex == -1) {
-            throw new IllegalArgumentException("Target element not found");
+        int index = 0;
+        while (index < size() && !target.equals(list[index])) {
+            index++;
         }
-
-        if (this.count == this.list.length) {
-            this.expandCapacity();
+        if (index == size) {
+            throw new NoSuchElementException();
         }
-
-        for(int i = this.count; i > targetIndex + 1; i--){
-            this.list[i] = this.list[i - 1];
+        for (int i = size; i > index; i--) {
+            list[i] = list[i - 1];
         }
-
-        this.list[targetIndex + 1] = element;
-        count++;
+        list[index + 1] = element;
+        size++;
+        modCount++;
     }
 }

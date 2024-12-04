@@ -1,6 +1,8 @@
 package game.data;
 
 
+import dataStructures.exceptions.EmptyCollectionException;
+import dataStructures.implementations.ArrayOrderedList;
 import dataStructures.implementations.ArrayUnorderedList;
 
 import game.character.Enemy;
@@ -22,10 +24,12 @@ import org.json.simple.parser.JSONParser;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ImportData {
     private static String defaultMissionSettingsPath = ".\\src\\missions\\Mission1.json";
     private static String gameSettingsPath = ".\\src\\settings\\GameSettings.json";
+    private static String simulationResultsPath = ".\\src\\exportedSimulations\\ManualSimulations.json";
 
     public void importDefaultMissionData() {
         importMissionData(defaultMissionSettingsPath);
@@ -61,7 +65,12 @@ public class ImportData {
             Player player = new Player("To Cruz");
 
             Mission.initialize(code, version, player, target, enemies, items, map, entriesAndExits);
-            MissionDisplay.setCurrentMissionImage("Mission1");
+
+            Path path = Paths.get(missionPath);
+            String fileName = path.getFileName().toString();
+            String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+            MissionDisplay.setCurrentMissionImage(fileNameWithoutExtension);
+
             System.out.println("mission " + code + " imported");
         } catch (Exception e) {
             System.out.println("An error occurred while importing mission data");
@@ -199,6 +208,76 @@ public class ImportData {
         Enemy enemy = new Enemy(name, power, room);
         room.addEnemy(enemy);
         return enemy;
+    }
+
+    public static ArrayUnorderedList<String> importSimulationCodesResults(){
+        JSONParser parser = new JSONParser();
+        ArrayUnorderedList<String> missionCodes = new ArrayUnorderedList<>();
+
+        try {
+            String jsonText = Files.readString(Path.of(simulationResultsPath));
+            JSONArray simulationsJSON = (JSONArray) parser.parse(jsonText);
+
+            for(int i = 0; i < simulationsJSON.size(); i++) {
+                JSONObject object = (JSONObject) simulationsJSON.get(i);
+                String code = (String) object.get("cod-missao");
+
+                try{
+                    if(!missionCodes.contains(code)){
+                        missionCodes.addToRear(code);
+                    }
+                }catch (EmptyCollectionException ex){
+                    missionCodes.addToRear(code);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while importing simulation codes");
+            System.out.println("*** ERROR: " + e.getMessage() + " ***");
+        }
+
+        return missionCodes;
+    }
+
+    public static ArrayOrderedList<SimulationResults> importSimulationResultsByCode(String selectedCode){
+        ArrayOrderedList<SimulationResults> results = new ArrayOrderedList<>();
+
+        JSONParser parser = new JSONParser();
+
+        try {
+            String jsonText = Files.readString(Path.of(simulationResultsPath));
+            JSONArray simulationsJSON = (JSONArray) parser.parse(jsonText);
+
+            for(int i = 0; i < simulationsJSON.size(); i++) {
+                JSONObject object = (JSONObject) simulationsJSON.get(i);
+                String code = (String) object.get("cod-missao");
+
+                if(code.equals(selectedCode)){
+                    results.add(jsonToSimulationResults(object));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while importing simulation codes");
+            System.out.println("*** ERROR: " + e.getMessage() + " ***");
+        }
+
+        return results;
+    }
+
+    public static SimulationResults jsonToSimulationResults(JSONObject object){
+        String codeMission = (String) object.get("cod-missao");
+        int version = ((Long) object.get("versao")).intValue();
+        int remainingHealth = ((Long) object.get("pontos-vida-restantes")).intValue();
+        boolean simulationSuccess = (Boolean) object.get("simulation-success");
+        ArrayUnorderedList<Room> rooms = new ArrayUnorderedList<>();
+
+        JSONArray roomsJson = (JSONArray) object.get("trajeto");
+        for(int i = 0; i < roomsJson.size(); i++){
+            String roomName = (String) roomsJson.get(i);
+            rooms.addToRear(new Room(roomName));
+        }
+
+        return new SimulationResults(codeMission, version, remainingHealth, simulationSuccess, rooms);
     }
 
 }
