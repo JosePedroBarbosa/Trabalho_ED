@@ -4,7 +4,6 @@ import dataStructures.ADTS.StackADT;
 import dataStructures.exceptions.EmptyCollectionException;
 
 public class LinkedStack<T> implements StackADT<T> {
-
     /**
      * int that represents both the number of elements and the next available
      * position in the array
