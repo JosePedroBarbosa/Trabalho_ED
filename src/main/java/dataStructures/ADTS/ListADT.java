@@ -2,74 +2,56 @@ package dataStructures.ADTS;
 
 import java.util.Iterator;
 
-import dataStructures.exceptions.ElementNotFoundException;
-import dataStructures.exceptions.EmptyCollectionException;
-
 /**
  * The ListADT interface defines the general methods for a list.
  *
- * This interface includes basic operations such as removal, element access,
- * existence check, list size, and obtaining an iterator.
- *
  * @param <T> the type of elements the list will contain
  *
- * @author carlos
  */
 public interface ListADT<T> extends Iterable<T> {
-
     /**
-     * Removes and returns the first element of the list.
+     * Removes and returns the first element from this list.
      *
-     * @return the first element in the list
-     * @throws EmptyCollectionException if the list is empty
+     * @return the first element from this list
      */
-    public T removeFirst() throws EmptyCollectionException;
+    public T removeFirst ();
 
     /**
      * Removes and returns the last element from this list.
      *
      * @return the last element from this list
-     * @throws EmptyCollectionException if the list is empty
      */
-    public T removeLast() throws EmptyCollectionException;
+    public T removeLast ();
 
     /**
      * Removes and returns the specified element from this list.
      *
      * @param element the element to be removed from the list
-     * @return the removed element
-     * @throws EmptyCollectionException if the list is empty
-     * @throws ElementNotFoundException if the element is not on the list
      */
-    public T remove(T element) throws EmptyCollectionException, ElementNotFoundException;
+    public T remove (T element);
 
     /**
      * Returns a reference to the first element in this list.
-     *
      * @return a reference to the first element in this list
-     * @throws EmptyCollectionException if the list is empty
      */
-    public T first() throws EmptyCollectionException;
+    public T first ();
 
     /**
      * Returns a reference to the last element in this list.
-     *
      * @return a reference to the last element in this list
-     * @throws EmptyCollectionException if the list is empty
      */
-    public T last() throws EmptyCollectionException;
+    public T last ();
 
     /**
-     * Returns true if this list contains the specified target element.
-     *
+     * Returns true if this list contains the specified target
+     * element.
      * @param target the target that is being sought in the list
      * @return true if the list contains this element
      */
-    public boolean contains(T target);
+    public boolean contains (T target);
 
     /**
      * Returns true if this list contains no elements.
-     *
      * @return true if this list contains no elements
      */
     public boolean isEmpty();
@@ -77,7 +59,8 @@ public interface ListADT<T> extends Iterable<T> {
     /**
      * Returns the number of elements in this list.
      *
-     * @return the integer representation of the number of elements in this list
+     * @return the integer representation of number of
+     * elements in this list
      */
     public int size();
 
@@ -95,5 +78,4 @@ public interface ListADT<T> extends Iterable<T> {
      */
     @Override
     public String toString();
-
 }

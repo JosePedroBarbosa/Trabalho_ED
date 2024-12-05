@@ -3,11 +3,17 @@ package dataStructures.implementations;
 import dataStructures.ADTS.StackADT;
 import dataStructures.exceptions.EmptyCollectionException;
 
+/**
+ * This class represents a ArrayStack that follows the Last-In-First-Out (LIFO) principle, where elements are
+ * added and removed from the top of the stack.
+ *
+ * @param <T> the type of elements held in this stack
+ */
 public class ArrayStack<T> implements StackADT<T> {
     /**
      * constant to represent the default capacity of the array
      */
-    private final int DEFAULT_CAPACITY = 50;
+    private final int DEFAULT_CAPACITY = 100;
 
     /**
      * int that represents both the number of elements and the next
@@ -25,7 +31,7 @@ public class ArrayStack<T> implements StackADT<T> {
      */
     public ArrayStack() {
         top = 0;
-        stack = (T[])(new Object[DEFAULT_CAPACITY]);
+        stack = (T[]) (new Object[DEFAULT_CAPACITY]);
     }
 
     /**
@@ -34,7 +40,7 @@ public class ArrayStack<T> implements StackADT<T> {
      */
     public ArrayStack(int initialCapacity) {
         top = 0;
-        stack = (T[])(new Object[initialCapacity]);
+        stack = (T[]) (new Object[initialCapacity]);
     }
 
     /**
@@ -67,6 +73,7 @@ public class ArrayStack<T> implements StackADT<T> {
         top--;
         T result = stack[top];
         stack[top] = null;
+
         return result;
     }
 
@@ -86,9 +93,8 @@ public class ArrayStack<T> implements StackADT<T> {
         return stack[top - 1];
     }
 
-
     /**
-     * Expands the stack capacity (*2)
+     * Expands the stack capacity (with a factor of 2)
      */
     public void expandCapacity(){
         T[] newStack = (T[]) (new Object[stack.length * 2]);
@@ -138,5 +144,4 @@ public class ArrayStack<T> implements StackADT<T> {
         result += "]";
         return result;
     }
-
 }

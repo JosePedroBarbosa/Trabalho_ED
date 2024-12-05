@@ -3,10 +3,6 @@ package dataStructures.implementations;
 import dataStructures.ADTS.StackADT;
 import dataStructures.exceptions.EmptyCollectionException;
 
-/**
- *
- * @author Carlos Barbosa
- */
 public class LinkedStack<T> implements StackADT<T> {
 
     /**

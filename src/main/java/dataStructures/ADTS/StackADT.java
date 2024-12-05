@@ -23,18 +23,18 @@ public interface StackADT<T> {
      */
     public T peek();
 
-    /**  Returns true if this stack contains no elements.
-     *   @return boolean whether this stack is empty or not
+    /** Returns true if this stack contains no elements.
+     * @return boolean whether or not this stack is empty
      */
     public boolean isEmpty();
 
-    /**  Returns the number of elements in this stack.
-     *   @return int number of elements in this stack
+    /** Returns the number of elements in this stack.
+     * @return int number of elements in this stack
      */
     public int size();
 
-    /**  Returns a string representation of this stack.
-     *   @return String representation of this stack
+    /** Returns a string representation of this stack.
+     * @return String representation of this stack
      */
     @Override
     public String toString();

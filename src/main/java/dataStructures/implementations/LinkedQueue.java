@@ -3,19 +3,30 @@ package dataStructures.implementations;
 import dataStructures.ADTS.QueueADT;
 import dataStructures.exceptions.EmptyCollectionException;
 
+/**
+ * A linked implementation of a Queue (FIFO - First In, First Out).
+ *
+ * @param <T> the type of elements in the queue
+ */
 public class LinkedQueue<T> implements QueueADT<T> {
-
     private int size;
-
     private LinearNode<T> front;
     private LinearNode<T> rear;
 
+    /**
+     * Default constructor. Initializes an empty queue.
+     */
     public LinkedQueue() {
         this.size = 0;
         this.front = null;
         this.rear = null;
     }
 
+    /**
+     * Constructs a queue with a single element.
+     *
+     * @param element the initial element to be added
+     */
     public LinkedQueue(T element) {
         LinearNode<T> newNode = new LinearNode<>(element);
 
@@ -24,6 +35,11 @@ public class LinkedQueue<T> implements QueueADT<T> {
         this.size = 1;
     }
 
+    /**
+     * Adds an element to the rear of the queue.
+     *
+     * @param element the element to be added
+     */
     @Override
     public void enqueue(T element) {
         LinearNode<T> newElement = new LinearNode<>(element);
@@ -39,6 +55,12 @@ public class LinkedQueue<T> implements QueueADT<T> {
         this.size++;
     }
 
+    /**
+     * Removes and returns the element from the front of the queue.
+     *
+     * @return the element removed
+     * @throws EmptyCollectionException if the queue is empty
+     */
     @Override
     public T dequeue() throws EmptyCollectionException {
         if (this.isEmpty()) {
@@ -57,6 +79,12 @@ public class LinkedQueue<T> implements QueueADT<T> {
         return removedNode.getElement();
     }
 
+    /**
+     * Returns the element at the front of the queue without removing it.
+     *
+     * @return the element at the front
+     * @throws EmptyCollectionException if the queue is empty
+     */
     @Override
     public T first() throws EmptyCollectionException {
         if (this.isEmpty()) {
@@ -66,16 +94,31 @@ public class LinkedQueue<T> implements QueueADT<T> {
         return this.front.getElement();
     }
 
+    /**
+     * Checks if the queue is empty.
+     *
+     * @return true if the queue is empty, false otherwise.
+     */
     @Override
     public boolean isEmpty() {
-        return this.size == 0;
+        return (this.size == 0);
     }
 
+    /**
+     * Returns the number of elements in the queue.
+     *
+     * @return the size of the queue
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * Returns a string representation of the queue.
+     *
+     * @return the string representation of the queue
+     */
     @Override
     public String toString() {
         String s = "";
