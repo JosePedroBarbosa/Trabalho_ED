@@ -129,8 +129,8 @@ public class ArrayList<T> implements ListADT<T>, Iterable<T> {
         String result = "";
         if (!isEmpty()) {
             for (int i = 0; i < size(); i++) {
-                result += list[i] + " ";
-                result += "--------------- \n";
+                result += list[i].toString();
+                result += "---------------\n";
             }
         }
         return result;
