@@ -1,11 +1,10 @@
 package game.exceptions;
 
 /**
- *
- * @author carlo
+ * The PlayerLeftException is thrown when an action is attempted after the player
+ * has left or exited from the game.
  */
 public class PlayerLeftException extends Exception{
-
     /**
      * Creates a new instance of <code>EmptyBackPackException</code> without
      * detail message.

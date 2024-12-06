@@ -9,6 +9,11 @@ import game.character.Enemy;
 import game.items.Item;
 import dataStructures.implementations.ArrayUnorderedList;
 
+/**
+ * Represents a mission in the game.
+ * The Mission class follows the Singleton design pattern, ensuring that only one instance of a mission
+ * exists during runtime.
+ */
 public class Mission {
     private String missionCode;
     private int version;

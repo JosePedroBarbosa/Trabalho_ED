@@ -68,9 +68,11 @@ public interface IEntity {
     public void takeDamage(int damage);
 
     /**
-     * Performs an attack on another character, causing damage.
+     * Abstract method that Performs an attack on another character, causing damage.
+     * This method must be implemented by subclasses of Entity.
+     *
      */
-    public void attack();
+    public abstract void attack();
 
     /**
      * Retrieves the current power level of the character. Power represents the

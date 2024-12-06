@@ -14,8 +14,14 @@ import java.io.File;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * The Menus class handles the user interface for the game, providing menus for navigation,
+ * settings management, and simulation operations.
+ */
 public class Menus {
-
+    /**
+     * Displays the welcome menu, imports game data, and transitions to the mission menu.
+     */
     public static void welcomeMenu() {
         Scanner scanner = new Scanner(System.in);
 
@@ -36,6 +42,12 @@ public class Menus {
         missionMenu(scanner);
     }
 
+    /**
+     * Displays the mission menu, allowing the user to start simulations, change settings,
+     * or view manual simulation results.
+     *
+     * @param scanner the scanner instance for user input
+     */
     public static void missionMenu(Scanner scanner) {
         boolean running = true;
 
@@ -85,6 +97,12 @@ public class Menus {
         scanner.close();
     }
 
+    /**
+     * Displays the simulation menu, providing options for manual or automatic simulations.
+     *
+     * @param scanner the scanner instance for user input
+     * @param mission the instantiated mission object for simulation
+     */
     private static void startSimulationMenu(Scanner scanner, Mission mission) {
         int choice = -1;
 
@@ -95,7 +113,6 @@ public class Menus {
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
 
-
             try{
                 choice = scanner.nextInt();
                 scanner.nextLine();
@@ -103,12 +120,10 @@ public class Menus {
                 switch (choice) {
                     case 1:
                         System.out.println("Starting Manual Simulation...");
-                        // Lógica para simulação manual
                         Simulation.manualSimulation(mission, scanner);
                         break;
                     case 2:
                         System.out.println("Starting Automatic Simulation...");
-                        // Lógica para simulação automática
                         break;
                     case 0:
                         break;
@@ -124,6 +139,11 @@ public class Menus {
         }
     }
 
+    /**
+     * Manages game settings, allowing the user to adjust various parameters.
+     *
+     * @param scanner the scanner instance for user input
+     */
     public static void manageSettingsMenu(Scanner scanner) {
 
         int choice = -1;
@@ -134,7 +154,6 @@ public class Menus {
             System.out.println("2. Import Mission");
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
-
 
             try{
                 choice = scanner.nextInt();
@@ -160,7 +179,11 @@ public class Menus {
         }
     }
 
-
+    /**
+     * Displays and manages game settings options, including capacity and power adjustments.
+     *
+     * @param scanner the scanner instance for user input
+     */
     private static void manageGameSettingsMenu(Scanner scanner) {
 
         int choice = -1;
@@ -174,7 +197,6 @@ public class Menus {
             System.out.println("4. Save Changes To JSON");
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
-
 
             try{
                 choice = scanner.nextInt();
@@ -217,6 +239,11 @@ public class Menus {
         }
     }
 
+    /**
+     * Manages manual simulation results, allowing the user to view previously imported simulations.
+     *
+     * @param scanner the scanner instance for user input
+     */
     public static void manageManualSimulationsMenu(Scanner scanner) {
         int choice = -1;
 
@@ -239,7 +266,6 @@ public class Menus {
 
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
-
 
             try{
                 choice = scanner.nextInt();
@@ -265,7 +291,12 @@ public class Menus {
         }
     }
 
-
+    /**
+     * Changes the backpack capacity in game settings.
+     *
+     * @param scanner the scanner instance for user input
+     * @return true if the change was successful, false otherwise
+     */
     private static boolean changeBackpackCapacity(Scanner scanner) {
         System.out.print("Insert Backpack Capacity: ");
 
@@ -288,6 +319,12 @@ public class Menus {
         }
     }
 
+    /**
+     * Changes the maximum enemy moves in game settings.
+     *
+     * @param scanner the scanner instance for user input
+     * @return true if the change was successful, false otherwise
+     */
     private static boolean changeEmemyMoves(Scanner scanner) {
         System.out.print("Insert Max Enemy Moves (1 - 2): ");
 
@@ -310,6 +347,12 @@ public class Menus {
         }
     }
 
+    /**
+     * Changes the player's power in game settings.
+     *
+     * @param scanner the scanner instance for user input
+     * @return true if the change was successful, false otherwise
+     */
     private static boolean changePlayerPower(Scanner scanner) {
         System.out.print("Insert To Cruz Power (1-100): ");
 
@@ -332,6 +375,11 @@ public class Menus {
         }
     }
 
+    /**
+     * Prompts the user to save game settings modifications to JSON before exiting.
+     *
+     * @param scanner the scanner instance for user input
+     */
     private static void saveGameSettingsToJsonMenu(Scanner scanner) {
         System.out.println("Modifications not saved in JSON. Do you want to save them before exiting? (Y/N)");
 
@@ -352,6 +400,11 @@ public class Menus {
         }
     }
 
+    /**
+     * Imports a new mission from a specified file.
+     *
+     * @param scanner the scanner instance for user input
+     */
     private static void importNewMission(Scanner scanner) {
         System.out.println("===== Import New Mission =====");
         System.out.println("Select The Mission Name:");
@@ -367,6 +420,11 @@ public class Menus {
         importer.importMissionData(missionPath);
     }
 
+    /**
+     * Prints the available mission files in the specified directory.
+     *
+     * @param directoryPath the path to the directory containing mission files
+     */
     private static void printAvailableMissions(String directoryPath) {
         File directory = new File(directoryPath);
 
@@ -385,5 +443,4 @@ public class Menus {
             System.out.println("The path provided is not a valid folder.");
         }
     }
-
 }

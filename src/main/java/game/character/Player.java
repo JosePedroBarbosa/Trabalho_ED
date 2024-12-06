@@ -7,27 +7,44 @@ import game.items.HealthKit;
 import game.items.Shield;
 
 import game.exceptions.FullBackPackException;
-
 import game.items.Backpack;
 import game.map.Room;
-
 import game.interfaces.IPlayer;
 import game.settings.GameSettings;
 
+/**
+ * The Player class represents a player in the game.
+ */
 public class Player extends Entity implements IPlayer {
-
+    /**
+     * The player's backpack where items are stored.
+     */
     private Backpack backpack;
 
+    /**
+     * Constructs a player with a name and initial room, and sets the backpack.
+     *
+     * @param name The name of the player.
+     * @param currentRoom The room where the player starts.
+     */
     public Player(String name, Room currentRoom) {
         super(name, GameSettings.getPlayerPower(), currentRoom);
         this.backpack = new Backpack();
     }
 
+    /**
+     * Constructs a player with a name and a default initial room.
+     *
+     * @param name The name of the player.
+     */
     public Player(String name) {
         super(name, GameSettings.getPlayerPower());
         this.backpack = new Backpack();
     }
 
+    /**
+     * Attacks all enemies in the current room, dealing damage equal to the player's power.
+     */
     @Override
     public void attack() {
         ArrayUnorderedList<Enemy> copyEnemies = new ArrayUnorderedList<>(this.currentRoom.getEnemies().size());
@@ -51,6 +68,12 @@ public class Player extends Entity implements IPlayer {
         }
     }
 
+    /**
+     * Attacks a specific enemy, dealing damage based on the player's power.
+     *
+     * @param target The enemy to be attacked.
+     */
+    @Override
     public void attack(Enemy target) {
         if (this.currentRoom.getEnemies().contains(target)) {
             int damageToEnemy = GameSettings.getPlayerPower();
@@ -66,6 +89,12 @@ public class Player extends Entity implements IPlayer {
         }
     }
 
+    /**
+     * Uses an item from the backpack to restore health. The player's health is limited at 100.
+     *
+     * @throws EmptyBackPackException If the backpack is empty.
+     */
+    @Override
     public void useItem() throws EmptyBackPackException {
         Item item = backpack.useBackpackItem();
 
@@ -79,9 +108,15 @@ public class Player extends Entity implements IPlayer {
         }
 
         System.out.println("Player used item: " + item.getType() + " and got health: " + this.health);
-
     }
 
+    /**
+     * Collects an item from the room and adds it to the player's backpack.
+     * If the item is a Shield, it adds extra health to the player.
+     * If the item is a HealthKit, it is stored in the backpack.
+     *
+     * @param item The item to be collected.
+     */
     @Override
     public void collectItem(Item item) {
         if (item instanceof Shield) {
@@ -98,10 +133,15 @@ public class Player extends Entity implements IPlayer {
             } catch (FullBackPackException ex) {
                 System.out.println("Backpack is full, the HealthKit has not been collected");
             }
-
         }
     }
 
+    /**
+     * Returns the player's backpack.
+     *
+     * @return The player's backpack.
+     */
+    @Override
     public Backpack getBackpack(){
         return backpack;
     }

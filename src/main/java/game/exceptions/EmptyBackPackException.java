@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Exception.java to edit this template
- */
 package game.exceptions;
 
 /**
- *
- * @author carlo
+ * The EmptyBackPackException is thrown when an attempt is made to interact with
+ * an empty backpack, such as trying to use an item when there are no items
+ * available.
  */
 public class EmptyBackPackException extends Exception{
 
