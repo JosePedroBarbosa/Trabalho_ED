@@ -2,6 +2,7 @@ package game.mission;
 
 import game.character.Player;
 import game.exceptions.NoMissionInstantiated;
+import game.interfaces.IMission;
 import game.map.Target;
 import game.map.Room;
 import game.map.Map;
@@ -14,7 +15,7 @@ import dataStructures.implementations.ArrayUnorderedList;
  * The Mission class follows the Singleton design pattern, ensuring that only one instance of a mission
  * exists during runtime.
  */
-public class Mission {
+public class Mission implements IMission {
     private String missionCode;
     private int version;
     private Player player;

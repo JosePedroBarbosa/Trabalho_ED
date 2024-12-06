@@ -39,6 +39,7 @@ public class Map implements IMap {
     /**
      * Prints the map to the console, displaying all rooms and their connections.
      */
+    @Override
     public void printMap(){
         map.printGraph();
     }
@@ -48,7 +49,9 @@ public class Map implements IMap {
      *
      * @return The graph representing the map.
      */
+    @Override
     public Graph<Room> getMap() {
         return map;
     }
+
 }

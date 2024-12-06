@@ -39,6 +39,7 @@ public class Target implements ITarget {
      * @param type The new type of the target.
      * @throws IllegalArgumentException if the type is null.
      */
+    @Override
     public void setType(String type){
         if(type == null){
             throw new IllegalArgumentException("Target type cannot be null");
@@ -51,6 +52,7 @@ public class Target implements ITarget {
      *
      * @return The type of the target.
      */
+    @Override
     public String getType(){
         return type;
     }
@@ -60,6 +62,7 @@ public class Target implements ITarget {
      *
      * @return The current room of the target.
      */
+    @Override
     public Room getCurrentRoom(){
         return currentRoom;
     }
@@ -70,6 +73,7 @@ public class Target implements ITarget {
      * @param currentRoom The new room for the target.
      * @throws IllegalArgumentException if the room is null.
      */
+    @Override
     public void setCurrentRoom(Room currentRoom){
         if(currentRoom == null){
             throw new IllegalArgumentException("Room cannot be null.");
@@ -82,6 +86,7 @@ public class Target implements ITarget {
      *
      * @param pickedUp true if the target is picked up, false otherwise.
      */
+    @Override
     public void setPickedUp(boolean pickedUp){
         this.pickedUp = pickedUp;
     }
@@ -91,6 +96,7 @@ public class Target implements ITarget {
      *
      * @return true if the target is picked up, false otherwise.
      */
+    @Override
     public boolean isPickedUp(){
         return pickedUp;
     }
