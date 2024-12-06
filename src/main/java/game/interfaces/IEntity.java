@@ -81,4 +81,9 @@ public interface IEntity {
      * @return the character's current power as an integer.
      */
     public int getPower();
+
+    /**
+     * Sets the health of the entity to the initial health value.
+     */
+    public void setLife();
 }

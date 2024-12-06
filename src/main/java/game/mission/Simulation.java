@@ -22,8 +22,9 @@ public class Simulation {
     private static ArrayUnorderedList<Room> simulationRoute;
 
     public static void manualSimulation(Mission mission, Scanner scanner){
-        //reset player current room
+        //reset player current room and set initial player health
         mission.getPlayer().setCurrentRoom(null);
+        mission.getPlayer().setLife();
 
         boolean gameOver = false;
         simulationRoute = new ArrayUnorderedList<>();

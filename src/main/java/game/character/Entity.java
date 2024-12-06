@@ -108,6 +108,14 @@ public abstract class Entity implements IEntity {
     }
 
     /**
+     * Sets the health of the entity to the initial health value.
+     */
+    @Override
+    public void setLife() {
+        this.health =  GameSettings.getInitialCharacterHealth();
+    }
+
+    /**
      * Returns the current health of the entity.
      *
      * @return The health of the entity.
