@@ -3,6 +3,12 @@ package dataStructures.implementations;
 import dataStructures.ADTS.StackADT;
 import dataStructures.exceptions.EmptyCollectionException;
 
+/**
+ * This class represents a LinkedStack that follows the Last-In-First-Out (LIFO) principle, where elements are
+ * added and removed from the top of the stack.
+ *
+ * @param <T> the type of elements held in this stack
+ */
 public class LinkedStack<T> implements StackADT<T> {
     /**
      * int that represents both the number of elements and the next available
@@ -11,7 +17,7 @@ public class LinkedStack<T> implements StackADT<T> {
     private int size;
 
     /**
-     * array of generic elements to represent the stack
+     * Linear Node to represent the head of the linked stack
      */
     private LinearNode<T> head;
 
@@ -24,7 +30,7 @@ public class LinkedStack<T> implements StackADT<T> {
     }
 
     /**
-     * Creates an stack with one element.
+     * Creates a stack with one element.
      *
      * @param element the element in the stack
      */
