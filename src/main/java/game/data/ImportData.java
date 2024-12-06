@@ -71,7 +71,7 @@ public class ImportData {
             String fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
             MissionDisplay.setCurrentMissionImage(fileNameWithoutExtension);
 
-            System.out.println("mission " + code + " imported");
+            System.out.println("mission " + code + " imported successfully!");
         } catch (Exception e) {
             System.out.println("An error occurred while importing mission data");
             System.out.println("*** ERROR: " + e.getMessage() + " ***");
@@ -79,7 +79,6 @@ public class ImportData {
     }
 
     public void importGameSettingsData(){
-
         JSONParser parser = new JSONParser();
 
         try {

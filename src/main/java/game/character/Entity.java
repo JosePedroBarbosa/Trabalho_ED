@@ -91,13 +91,9 @@ public abstract class Entity implements IEntity {
      * Sets the current room of the entity. Throws an exception if the room is null.
      *
      * @param nextRoom The new room where the entity will be placed.
-     * @throws IllegalArgumentException If the room is null.
      */
     @Override
     public void setCurrentRoom(Room nextRoom) {
-        if (nextRoom == null) {
-            throw new IllegalArgumentException("The Element Cant Be Null");
-        }
         this.currentRoom = nextRoom;
     }
 

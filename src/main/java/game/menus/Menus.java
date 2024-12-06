@@ -34,11 +34,11 @@ public class Menus {
 
         ImportData importer = new ImportData();
 
+        System.out.println("================ \n");
         System.out.println("Importing All Data...");
         importer.importGameSettingsData();
         importer.importDefaultMissionData();
-        System.out.println("All data has been successfully imported.");
-
+        System.out.println("\n================ \n");
         missionMenu(scanner);
     }
 
@@ -250,7 +250,7 @@ public class Menus {
         ArrayUnorderedList<String> importedCodes = ImportData.importSimulationCodesResults();
 
         while(choice != 0) {
-            System.out.println("===== Available Manual Simulations =====");
+            System.out.println("\n===== Available Manual Simulations =====");
 
             if(importedCodes.isEmpty()){
                 System.out.println("No simulations available.");

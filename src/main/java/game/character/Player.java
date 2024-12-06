@@ -58,7 +58,7 @@ public class Player extends Entity implements IPlayer {
         for (Enemy enemy : copyEnemies) {
             if(enemy != null){
                 enemy.takeDamage(GameSettings.getPlayerPower());
-                System.out.println("Player attacked Enemy " + enemy.getName() + ", causing " + this.power + " damage.");
+                System.out.println("Player attacked Enemy " + enemy.getName() + ", causing " + GameSettings.getPlayerPower() + " damage.");
 
                 if(!enemy.isAlive()){
                     this.currentRoom.removeEnemy(enemy);

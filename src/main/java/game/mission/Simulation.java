@@ -22,6 +22,9 @@ public class Simulation {
     private static ArrayUnorderedList<Room> simulationRoute;
 
     public static void manualSimulation(Mission mission, Scanner scanner){
+        //reset player current room
+        mission.getPlayer().setCurrentRoom(null);
+
         boolean gameOver = false;
         simulationRoute = new ArrayUnorderedList<>();
 
@@ -174,6 +177,9 @@ public class Simulation {
                 break;
             case 5:
                 MissionDisplay.showImage(scanner);
+                break;
+            case 6:
+                mission.getMissionMap().printMap();
                 break;
             case 0:
                 if (mission.getTarget().isPickedUp()) {
@@ -623,7 +629,8 @@ public class Simulation {
             System.out.println("3̶ ̶-̶ ̶P̶r̶i̶n̶t̶ ̶B̶e̶s̶t̶ ̶P̶a̶t̶h̶s̶");
         }
         System.out.println("4 - Print Mission Status");
-        System.out.println("5 - Show Map");
+        System.out.println("5 - Show Map (Image)");
+        System.out.println("6 - Show Map (Console)");
 
         if (canLeave) {
             System.out.println("0 - Leave The Building");
@@ -637,7 +644,7 @@ public class Simulation {
                 int choice = scanner.nextInt();
                 scanner.nextLine();
 
-                if(choice >= 0 && choice <= 5){
+                if(choice >= 0 && choice <= 6){
                     if((choice == 2 && !canUseItem) || choice == 0 && !canLeave){
                         System.out.println("Invalid Option");
                     }else{
