@@ -27,12 +27,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ImportData {
-    private static String defaultMissionSettingsPath = ".\\src\\missions\\Mission1.json";
+    private static String currentMissionSettingsPath = ".\\src\\missions\\Mission1.json";
     private static String gameSettingsPath = ".\\src\\settings\\GameSettings.json";
     private static String simulationResultsPath = ".\\src\\exportedSimulations\\ManualSimulations.json";
 
-    public void importDefaultMissionData() {
-        importMissionData(defaultMissionSettingsPath);
+    public void importCurrentMissionData() {
+        importMissionData(currentMissionSettingsPath);
     }
 
     public void importMissionData(String missionPath){
@@ -65,6 +65,7 @@ public class ImportData {
             Player player = new Player("To Cruz");
 
             Mission.initialize(code, version, player, target, enemies, items, map, entriesAndExits);
+            currentMissionSettingsPath = missionPath;
 
             Path path = Paths.get(missionPath);
             String fileName = path.getFileName().toString();

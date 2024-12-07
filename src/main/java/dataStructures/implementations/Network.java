@@ -30,7 +30,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         removeEdge(getIndex(vertex1), getIndex(vertex2));
     }
 
-    @Override
     public void removeEdge(int index1, int index2) {
         if(indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = Double.POSITIVE_INFINITY;
@@ -136,7 +135,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return resultList.iterator();
     }
 
-    @Override
     protected Iterator<Integer> iteratorShortestPathIndices(int startIndex, int targetIndex) {
         int index;
         double weight;

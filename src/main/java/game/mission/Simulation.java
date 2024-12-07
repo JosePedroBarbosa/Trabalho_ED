@@ -5,6 +5,7 @@ import game.character.Enemy;
 import game.character.Entity;
 import game.character.Player;
 import game.data.ExportData;
+import game.data.ImportData;
 import game.data.MissionDisplay;
 import game.exceptions.EmptyBackPackException;
 import game.exceptions.NoMissionInstantiated;
@@ -23,9 +24,8 @@ public class Simulation {
     private static ArrayUnorderedList<Room> simulationRoute;
 
     public static void manualSimulation(Mission mission, Scanner scanner) throws NoMissionInstantiated {
-        //reset player current room and set initial player health
-        mission.getPlayer().setCurrentRoom(null);
-        mission.getPlayer().setLife();
+        ImportData importer = new ImportData();
+        importer.importCurrentMissionData();
 
         boolean gameOver = false;
         simulationRoute = new ArrayUnorderedList<>();
@@ -474,23 +474,6 @@ public class Simulation {
 
                     neighbours = mission.getMissionMap().getMap().getNeighbours(nextRoom);
                 }
-            }
-        }
-    }
-
-    private static boolean yesOrNoChoise(Scanner scanner, String message) {
-        System.out.println(message);
-
-        while(true) {
-            System.out.print("> ");
-            String option = scanner.nextLine();
-
-            if (option.equals("Y") || option.equals("y")) {
-                return true;
-            } else if (option.equals("N") || option.equals("n")) {
-                return false;
-            } else {
-                System.out.println("Invalid input. Please enter 'Y' for Yes or 'N' for No.");
             }
         }
     }

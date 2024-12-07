@@ -37,7 +37,7 @@ public class Menus {
         System.out.println("================ \n");
         System.out.println("Importing All Data...");
         importer.importGameSettingsData();
-        importer.importDefaultMissionData();
+        importer.importCurrentMissionData();
         System.out.println("\n================ \n");
         missionMenu(scanner);
     }
