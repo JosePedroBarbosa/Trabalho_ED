@@ -7,6 +7,7 @@ import game.character.Player;
 import game.data.ExportData;
 import game.data.MissionDisplay;
 import game.exceptions.EmptyBackPackException;
+import game.exceptions.NoMissionInstantiated;
 import game.items.HealthKit;
 import game.items.Item;
 import game.map.Room;
@@ -21,7 +22,7 @@ public class Simulation {
     private static boolean missionSuccess;
     private static ArrayUnorderedList<Room> simulationRoute;
 
-    public static void manualSimulation(Mission mission, Scanner scanner){
+    public static void manualSimulation(Mission mission, Scanner scanner) throws NoMissionInstantiated {
         //reset player current room and set initial player health
         mission.getPlayer().setCurrentRoom(null);
         mission.getPlayer().setLife();
@@ -151,20 +152,20 @@ public class Simulation {
 
                 if (mission.getTarget().getCurrentRoom().equals(nextRoom)) {
                     if (nextRoom.hasEnemies()) {
-                        handleScenario5(mission);
+                        handleScenario5(mission, scanner);
                     } else {
                         handleScenario6(mission);
                     }
                 }else{
                     if (!mission.getPlayer().getCurrentRoom().getEnemies().isEmpty()) {
-                        handleScenario1(mission);
+                        handleScenario1(mission, scanner);
                     }else{
-                        handleScenario2(mission);
+                        handleScenario2(mission, scanner);
                     }
                 }
                 break;
             case 2:
-                handleScenario4(mission);
+                handleScenario4(mission, scanner);
                 break;
             case 3:
                 printBestPathToHealthKit(mission);
@@ -207,10 +208,10 @@ public class Simulation {
      *
      * @param mission the current mission containing the player and enemies.
      */
-    public static void handleScenario1(Mission mission){
+    public static void handleScenario1(Mission mission, Scanner scanner){
         System.out.println("The player encountered enemies in the room. Confrontation Started");
-        confrontation(mission.getPlayer());
-        enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission));
+        confrontation(mission.getPlayer(), scanner);
+        enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission), scanner);
     }
 
     /**
@@ -219,8 +220,8 @@ public class Simulation {
      *
      * @param mission the current mission containing the player and enemies.
      */
-    public static void handleScenario2(Mission mission){
-        enemiesRandomMove(mission, mission.getEnemies());
+    public static void handleScenario2(Mission mission, Scanner scanner){
+        enemiesRandomMove(mission, mission.getEnemies(), scanner);
     }
 
     /**
@@ -231,10 +232,10 @@ public class Simulation {
      * @param mission the current mission containing the player and enemies.
      * @param enemy the enemy that attacks the player
      */
-    public static void handleScenario3(Mission mission, Enemy enemy){
+    public static void handleScenario3(Mission mission, Enemy enemy, Scanner scanner){
         System.out.println("The enemy encountered the player in the room. Confrontation Started");
-        confrontation(enemy);
-        enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission));
+        confrontation(enemy, scanner);
+        enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission), scanner);
     }
 
     /**
@@ -245,10 +246,10 @@ public class Simulation {
      *
      * @param mission the current mission containing the player and enemies.
      */
-    public static void handleScenario4(Mission mission) {
+    public static void handleScenario4(Mission mission, Scanner scanner) {
         try {
             mission.getPlayer().useItem();
-            enemiesRandomMove(mission, mission.getEnemies());
+            enemiesRandomMove(mission, mission.getEnemies(), scanner);
         } catch (EmptyBackPackException e) {
             System.out.println("No Items In The BackPack");
         }
@@ -259,15 +260,15 @@ public class Simulation {
      * - The player attacks all enemies in the room, dealing damage simultaneously.
      * - If enemies remain alive, they counter-attack the player and remain in the room,
      *   while other enemies in the building move randomly.
-     * - When the confrontation ends if the player reamin alive he secure the target
+     * - When the confrontation ends if the player remain alive he secure the target
      *
      * @param mission the current mission containing the player and enemies.
      */
-    private static void handleScenario5(Mission mission) {
+    private static void handleScenario5(Mission mission, Scanner scanner) {
         System.out.println("You found the target but there are enemies in the room. Confrontation Started.");
-        confrontation(mission.getPlayer());
+        confrontation(mission.getPlayer(), scanner);
         handleTarget(mission);
-        enemiesRandomMove(mission, mission.getEnemies());
+        enemiesRandomMove(mission, mission.getEnemies(), scanner);
     }
 
     /**
@@ -295,19 +296,25 @@ public class Simulation {
         }
     }
 
-    private static void confrontation(Entity priorityEntity) {
+    /**
+     * Handles a confrontation based on the priority entity.
+     * @param priorityEntity the entity with priority (Player or Enemy).
+     * @param scanner the input scanner for player actions.
+     */
+    private static void confrontation(Entity priorityEntity, Scanner scanner) {
         if (priorityEntity instanceof Player) {
             // If the player has the priority
-            attackSequence((Player) priorityEntity);
+            attackSequence((Player) priorityEntity, scanner);
         } else if (priorityEntity instanceof Enemy) {
             // If the enemy has the priority
-            attackSequence((Enemy) priorityEntity);
+            attackSequence((Enemy) priorityEntity, scanner);
+        }else {
+            throw new IllegalArgumentException("Invalid priority entity.");
         }
     }
 
-    public static void attackSequence(Player player){
+    public static void attackSequence(Player player, Scanner scanner){
         boolean confrontationEnd = false;
-        Scanner scanner = new Scanner(System.in);
 
         while(!confrontationEnd){
             System.out.println("\nConfrontation Options:");
@@ -318,25 +325,7 @@ public class Simulation {
                 System.out.println("2̶ ̶-̶ ̶U̶s̶e̶ ̶I̶t̶e̶m̶");
             }
 
-            int choice = 0;
-            boolean validChoice = false;
-
-            while (!validChoice) {
-                try {
-                    System.out.print("> ");
-                    choice = scanner.nextInt();
-                    scanner.nextLine();
-
-                    if (choice == 1 || (choice == 2 && player.getBackpack().getBackpackSize() > 0)) {
-                        validChoice = true;
-                    } else {
-                        System.out.println("Invalid choice. Try again.");
-                    }
-                } catch (InputMismatchException ex) {
-                    scanner.nextLine();
-                    System.out.println("Invalid input. Try again.");
-                }
-            }
+            int choice = getPlayerChoice(scanner, player.getBackpack().getBackpackSize() > 0);
 
             if (choice == 1) {
                 player.attack();
@@ -369,9 +358,8 @@ public class Simulation {
         }
     }
 
-    public static void attackSequence(Enemy enemy){
+    public static void attackSequence(Enemy enemy, Scanner scanner){
         boolean confrontationEnd = false;
-        Scanner scanner = new Scanner(System.in);
 
         while(!confrontationEnd){
             Player playerInTheRoom = enemy.getCurrentRoom().getPlayer();
@@ -399,25 +387,7 @@ public class Simulation {
                 System.out.println("2̶ ̶-̶ ̶U̶s̶e̶ ̶I̶t̶e̶m̶");
             }
 
-            int choice = 0;
-            boolean validChoice = false;
-
-            while (!validChoice) {
-                try {
-                    System.out.print("> ");
-                    choice = scanner.nextInt();
-                    scanner.nextLine();
-
-                    if (choice == 1 || (choice == 2 && playerInTheRoom.getBackpack().getBackpackSize() > 0)) {
-                        validChoice = true;
-                    } else {
-                        System.out.println("Invalid choice. Try again.");
-                    }
-                } catch (InputMismatchException ex) {
-                    scanner.nextLine();
-                    System.out.println("Invalid input. Try again.");
-                }
-            }
+            int choice = getPlayerChoice(scanner, playerInTheRoom.getBackpack().getBackpackSize() > 0);
 
             if (choice == 1) {
                 playerInTheRoom.attack(enemy);
@@ -446,6 +416,25 @@ public class Simulation {
         }
     }
 
+    private static int getPlayerChoice(Scanner scanner, boolean hasItems) {
+        while (true) {
+            try {
+                System.out.print("> ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 1 || (choice == 2 && hasItems)) {
+                    return choice;
+                } else {
+                    System.out.println("Invalid choice. Try again.");
+                }
+            } catch (InputMismatchException ex) {
+                scanner.nextLine();
+                System.out.println("Invalid input. Try again.");
+            }
+        }
+    }
+
     private static ArrayUnorderedList<Enemy> filterEnemiesNotInPlayerRoom(Mission mission) {
         ArrayUnorderedList<Enemy> filteredEnemies = new ArrayUnorderedList<>();
         for (Enemy enemy : mission.getEnemies()) {
@@ -456,7 +445,7 @@ public class Simulation {
         return filteredEnemies;
     }
 
-    public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies){
+    public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies, Scanner scanner){
         Random rand = new Random();
         int maxEnemyMoves = GameSettings.getMaxEnemyMoves();
 
@@ -479,7 +468,7 @@ public class Simulation {
                     //if the nextRoom have the Player the enemy has priority to attack
                     if(nextRoom.hasPlayer()){
                         System.out.println("Enemy " + enemy.getName() + " entered the player's room!");
-                        handleScenario3(mission, enemy);
+                        handleScenario3(mission, enemy, scanner);
                         break;
                     }
 
@@ -657,5 +646,9 @@ public class Simulation {
                 System.out.println("Invalid Option");
             }
         }
+    }
+
+    public static void autoSimulation(Mission mission){
+
     }
 }

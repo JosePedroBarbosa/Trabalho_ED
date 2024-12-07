@@ -76,6 +76,7 @@ public class ImportData {
             System.out.println("An error occurred while importing mission data");
             System.out.println("*** ERROR: " + e.getMessage() + " ***");
         }
+
     }
 
     public void importGameSettingsData(){
