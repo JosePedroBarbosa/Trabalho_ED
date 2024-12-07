@@ -131,7 +131,7 @@ public class Menus {
                         System.out.println("Invalid option. Returning to Main Menu...");
                 }
 
-            }catch(InputMismatchException ex){
+            }catch(InputMismatchException | NoMissionInstantiated ex){
                 System.out.println("Invalid option. Please try again.");
                 scanner.nextLine();
             }
@@ -145,7 +145,6 @@ public class Menus {
      * @param scanner the scanner instance for user input
      */
     public static void manageSettingsMenu(Scanner scanner) {
-
         int choice = -1;
 
         while(choice != 0) {
