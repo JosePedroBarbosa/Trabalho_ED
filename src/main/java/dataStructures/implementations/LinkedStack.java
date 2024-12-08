@@ -67,7 +67,6 @@ public class LinkedStack<T> implements StackADT<T> {
         }
 
         LinearNode<T> oldHead = this.head;
-        oldHead.setNext(null);
 
         this.head = this.head.getNext();
         this.size--;

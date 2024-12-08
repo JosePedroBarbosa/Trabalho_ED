@@ -14,12 +14,13 @@ import game.settings.GameSettings;
 import java.util.Random;
 
 public class AutoSimulation {
-
     private static Network<Room> currentNetwork;
 
     public static void autoSimulation(Mission mission){
         ImportData importer = new ImportData();
         importer.importCurrentMissionData();
+
+        currentNetwork = mission.getMissionMap().getMap();
 
         boolean gameOver = false;
 
@@ -32,11 +33,11 @@ public class AutoSimulation {
                 gameOver = true;
             }
         }
+
+        System.out.println("Player health: " + mission.getPlayer().getLife() + "HP");
     }
 
     private static void updateCurrentNetwork(Mission mission){
-        //LOGICA DE IMPLEMENTACAO DOS PESOS DA NETWORK DE ACORDO COM A MISSAO
-
         ArrayUnorderedList<Room> missionRooms = currentNetwork.getVertices();
 
         for(int i = 1; i < missionRooms.size(); i++){
@@ -52,13 +53,18 @@ public class AutoSimulation {
         }
     }
 
-
-    //PESO DE ENIMIGO = POTENCIAL DANO QUE ELE DA
-    //PESO DE NAO TER ENIMIGOS = CUSTO DE SE MOVER PARA UM ROOM
     public static double calculateEdgeWeigth(Room currentRoom, Room nextRoom){
         double weight = 0;
 
-        // calcular os pesos
+        if(nextRoom.hasEnemies()){
+            for(Enemy enemy : nextRoom.getEnemies()){
+                if(enemy != null && enemy.isAlive()){
+                    weight += enemy.getPower();
+                }
+            }
+        }else {
+            weight = 0; //default value
+        }
 
         return weight;
     }
@@ -109,12 +115,13 @@ public class AutoSimulation {
     }
 
     public static int getBestPlayerAction(Mission mission){
+        Player player = mission.getPlayer();
         //If the player has the target and is near to an entrance/exit he should leave
-        if(mission.getTarget().isPickedUp() && mission.getPlayer().getCurrentRoom().isEntranceAndExit()){
+        if(mission.getTarget().isPickedUp() && player.getCurrentRoom().isEntranceAndExit()){
             return 0;
         }
         //If the player has low life he should use a kit
-        if(mission.getPlayer().getLife() < 50){
+        if(player.getLife() < 50 && player.getBackpack().getBackpackSize() > 0){
             return 2;
         }
 
@@ -247,10 +254,8 @@ public class AutoSimulation {
 
     public static ArrayUnorderedList<Room> getBestPathToExit(Mission mission) {
         Room bestExit = getBestRoom(mission.getEntriesAndExits(), mission.getPlayer().getCurrentRoom());
-        if (bestExit != null) {
-            return currentNetwork.shortestPath(mission.getPlayer().getCurrentRoom(), bestExit);
-        }
-        return null;
+
+        return bestExit != null ? currentNetwork.shortestPath(mission.getPlayer().getCurrentRoom(), bestExit) : null;
     }
 
     private static Room getBestRoom(ArrayUnorderedList<Room> rooms, Room target) {
@@ -276,9 +281,11 @@ public class AutoSimulation {
 
     private static double calculatePathWeight(ArrayUnorderedList<Room> path) {
         double totalWeight = 0;
+
         for (int i = 1; i < path.size(); i++) {
             totalWeight += currentNetwork.getEdgeWeight(path.getByIndex(i - 1), path.getByIndex(i));
         }
+
         return totalWeight;
     }
 
@@ -473,11 +480,10 @@ public class AutoSimulation {
     }
 
     private static boolean getBestChoice(boolean hasItems, int playerLife) {
-        //alterar o criterio de vida minima para usar o item
-        //ver se compensa usar o item
-        if(hasItems && playerLife > 0){
+        if(hasItems && playerLife < 50){
             return true;
         }
+
         return false;
     }
 
