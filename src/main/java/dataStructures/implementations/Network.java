@@ -1,7 +1,7 @@
 package dataStructures.implementations;
 
 import dataStructures.ADTS.NetworkADT;
-import dataStructures.exceptions.EmptyCollectionException;
+import game.map.Room;
 
 import java.util.Iterator;
 
@@ -25,6 +25,17 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
             adjMatrix[index1][index2] = weight;
             adjMatrix[index2][index1] = weight;
         }
+    }
+
+    public double getEdgeWeight(T vertex1, T vertex2) {
+        return getEdgeWeight(getIndex(vertex1), getIndex(vertex2));
+    }
+
+    private double getEdgeWeight(int index1, int index2) {
+        if(indexIsValid(index1) && indexIsValid(index2)) {
+            return adjMatrix[index1][index2];
+        }
+        return Double.POSITIVE_INFINITY;
     }
 
     @Override
@@ -149,6 +160,22 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
             }
         }
         return resultList.iterator();
+    }
+
+    public ArrayUnorderedList<T> shortestPath(T startVertex, T endVertex) {
+        Iterator<Integer> it = iteratorShortestPathIndices(getIndex(startVertex), getIndex(endVertex));
+        ArrayUnorderedList<T> path = new ArrayUnorderedList<>();
+
+        while (it.hasNext()) {
+            path.addToRear(vertices[it.next()]);
+        }
+
+        return path;
+    }
+
+    @Override
+    public Iterator<T> iteratorShortestPath(T startVertex, T endVertex) {
+        return shortestPath(startVertex, endVertex).iterator();
     }
 
     protected Iterator<Integer> iteratorShortestPathIndices(int startIndex, int targetIndex) {

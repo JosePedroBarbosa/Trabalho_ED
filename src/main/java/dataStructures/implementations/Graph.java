@@ -332,13 +332,12 @@ public class Graph<T> implements GraphADT<T> {
         return this.numVertices;
     }
 
-    public T[] getVertices(){
-        T[] newVertices = (T[]) new Object[numVertices];
+    public ArrayUnorderedList<T> getVertices(){
+        ArrayUnorderedList<T> newVertices = new ArrayUnorderedList<>();
 
         for(int i = 0; i < numVertices; i++){
-            newVertices[i] = vertices[i];
+            newVertices.addToRear(vertices[i]);
         }
-
         return newVertices;
     }
 
@@ -347,21 +346,21 @@ public class Graph<T> implements GraphADT<T> {
     }
 
     public void printGraph() {
-        T[] vertices = this.getVertices();
+        ArrayUnorderedList<T> vertices = this.getVertices();
         boolean[][] adjMatrix = this.getAdjMatrix();
 
         System.out.println("=== Graph Visualization ===");
 
         for (int i = 0; i < this.size(); i++) {
-            if (vertices[i] != null) {
-                System.out.printf("[%s]\n", vertices[i]);
+            if (vertices.getByIndex(i) != null) {
+                System.out.printf("[%s]\n", vertices.getByIndex(i));
 
                 String connections = "   ➯ ";
                 boolean hasConnections = false;
 
                 for (int j = 0; j < this.size(); j++) {
                     if (adjMatrix[i][j]) {
-                        connections += vertices[j] + "   ";
+                        connections += vertices.getByIndex(j) + "   ";
                         hasConnections = true;
                     }
                 }
