@@ -75,7 +75,8 @@ public class ImportData {
             System.out.println("mission " + code + " imported successfully!");
         } catch (Exception e) {
             System.out.println("An error occurred while importing mission data");
-            System.out.println("*** ERROR: " + e.getMessage() + " ***");
+            //System.out.println("*** ERROR: " + e.getMessage() + " ***");
+            e.printStackTrace();
         }
 
     }

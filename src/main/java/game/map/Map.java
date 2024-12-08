@@ -1,19 +1,20 @@
 package game.map;
 
 import dataStructures.implementations.Graph;
+import dataStructures.implementations.Network;
 import game.interfaces.IMap;
 
 /**
  * Represents a map of the game, consisting of interconnected rooms.
- * This class uses a graph data structure to represent rooms as vertices
+ * This class uses a network data structure to represent rooms as vertices
  * and connections between rooms as edges. It provides methods to add rooms and connections,
  * as well as functionality to retrieve or print the map.
  */
 public class Map implements IMap {
     /**
-     * The graph representation of the map.
+     * The network representation of the map.
      */
-    protected Graph<Room> map = new Graph<>();
+    protected Network<Room> map = new Network<>();
 
     /**
      * Inserts a room into the map as a vertex.
@@ -33,7 +34,7 @@ public class Map implements IMap {
      */
     @Override
     public void insertConnection(Room room1, Room room2) {
-        map.addEdge(room1, room2);
+        map.addEdge(room1, room2, 1);
     }
 
     /**
@@ -45,12 +46,12 @@ public class Map implements IMap {
     }
 
     /**
-     * Retrieves the graph representation of the map.
+     * Retrieves the network representation of the map.
      *
-     * @return The graph representing the map.
+     * @return The network representing the map.
      */
     @Override
-    public Graph<Room> getMap() {
+    public Network<Room> getMap() {
         return map;
     }
 

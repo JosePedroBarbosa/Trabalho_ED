@@ -6,8 +6,9 @@ import game.data.ExportData;
 import game.data.ImportData;
 import game.data.SimulationResults;
 import game.exceptions.NoMissionInstantiated;
+import game.mission.AutoSimulation;
 import game.mission.Mission;
-import game.mission.Simulation;
+import game.mission.ManualSimulation;
 import game.settings.GameSettings;
 
 import java.io.File;
@@ -120,10 +121,11 @@ public class Menus {
                 switch (choice) {
                     case 1:
                         System.out.println("Starting Manual Simulation...");
-                        Simulation.manualSimulation(mission, scanner);
+                        ManualSimulation.manualSimulation(mission, scanner);
                         break;
                     case 2:
                         System.out.println("Starting Automatic Simulation...");
+                        AutoSimulation.autoSimulation(mission);
                         break;
                     case 0:
                         break;

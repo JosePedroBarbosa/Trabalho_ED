@@ -1,6 +1,7 @@
 package dataStructures.implementations;
 
 import dataStructures.ADTS.NetworkADT;
+import dataStructures.exceptions.EmptyCollectionException;
 
 import java.util.Iterator;
 
@@ -15,7 +16,8 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
-        addEdge(getIndex(vertex1), getIndex(vertex2), weight);
+        super.addEdge(vertex1, vertex2); //add in the graph matrix
+        this.addEdge(getIndex(vertex1), getIndex(vertex2), weight);
     }
 
     public void addEdge(int index1, int index2, double weight) {
@@ -39,17 +41,31 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
     @Override
     public void addVertex(T vertex){
-        if(numVertices == vertices.length){
-            expandCapacity();
+        if (vertex == null) {
+            throw new IllegalArgumentException("The Element Cant Be Null");
         }
 
-        vertices[numVertices] = vertex;
-        for(int i = 0; i <= numVertices; i++){
+        if (this.numVertices == this.vertices.length) {
+            expandNetworkCapacity();
+        }
+
+        for (int i = 0; i <= numVertices; i++) {
             adjMatrix[numVertices][i] = Double.POSITIVE_INFINITY;
             adjMatrix[i][numVertices] = Double.POSITIVE_INFINITY;
         }
+        super.addVertex(vertex); //add vertex in the graph
+    }
 
-        numVertices++;
+    public void expandNetworkCapacity(){
+        int newCapacity = numVertices * EXPANSION_FATORIAL;
+        double[][] newAdjMatrix = new double[newCapacity][newCapacity];
+        for (int i = 0; i < numVertices; i++) {
+            for(int j = 0; j < numVertices; j++) {
+                newAdjMatrix[i][j] = adjMatrix[i][j];
+            }
+        }
+
+        this.adjMatrix = newAdjMatrix;
     }
 
     @Override

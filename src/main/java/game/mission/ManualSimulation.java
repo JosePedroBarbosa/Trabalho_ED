@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Simulation {
+public class ManualSimulation {
     private static boolean missionSuccess;
     private static ArrayUnorderedList<Room> simulationRoute;
 
@@ -618,7 +618,7 @@ public class Simulation {
                 scanner.nextLine();
 
                 if(choice >= 0 && choice <= 6){
-                    if((choice == 2 && !canUseItem) || choice == 0 && !canLeave){
+                    if((choice == 2 && !canUseItem) || (choice == 3 && !availableBestPaths) || (choice == 0 && !canLeave)){
                         System.out.println("Invalid Option");
                     }else{
                         return choice;
@@ -631,7 +631,4 @@ public class Simulation {
         }
     }
 
-    public static void autoSimulation(Mission mission){
-
-    }
 }

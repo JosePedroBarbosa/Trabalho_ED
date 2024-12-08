@@ -107,7 +107,7 @@ public class Player extends Entity implements IPlayer {
             this.health = newHealth;
         }
 
-        System.out.println("Player used item: " + item.getType() + " and got health: " + this.health);
+        System.out.println("Player used item: " + item.getType() + " and got health: " + item.getGivenPoints() + ", Current Health: " + this.health);
     }
 
     /**
