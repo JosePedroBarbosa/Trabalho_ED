@@ -12,10 +12,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * ExportData provides methods for exporting game-related data to JSON files.
+ * It supports saving game settings and manual mission simulations.
+ */
 public class ExportData {
     private static String gameSettingsPath = ".\\src\\settings\\GameSettings.json";
     private static String manualSimulationsPath = ".\\src\\exportedSimulations\\ManualSimulations.json";
 
+    /**
+     * Saves the current game settings to a JSON file.
+     * The settings include maximum backpack items, maximum enemy moves,
+     * player power, and initial character health.
+     *
+     * @throws IOException if an error occurs while writing to the file
+     */
     public static void saveGameSettingsToJson() {
 
         JSONObject settings = new JSONObject();
@@ -32,6 +43,16 @@ public class ExportData {
         }
     }
 
+    /**
+     * Saves a manual mission simulation to a JSON file.
+     * Each simulation includes the mission code, version, route taken (as a list of rooms),
+     * remaining life points of the player, and whether the simulation was successful.
+     *
+     * @param mission the mission being simulated
+     * @param rooms the list of rooms (route) taken during the simulation
+     * @param success whether the simulation was successful or not
+     * @throws IOException if an error occurs while writing to the file
+     */
     public static void saveManualSimulationToJson(Mission mission, ArrayUnorderedList<Room> rooms, boolean success) {
         JSONArray simulationsArray;
 
@@ -58,6 +79,12 @@ public class ExportData {
         }
     }
 
+    /**
+     * Converts a list of rooms to a JSON array of room descriptions.
+     *
+     * @param rooms the list of rooms to be converted
+     * @return a JSON array representing the rooms in the simulation
+     */
     private static JSONArray convertRoomsToArray(ArrayUnorderedList<Room> rooms){
         JSONArray jsonArray = new JSONArray();
 

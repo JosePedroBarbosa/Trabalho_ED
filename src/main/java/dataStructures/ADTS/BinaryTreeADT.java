@@ -2,6 +2,9 @@ package dataStructures.ADTS;
 
 import java.util.Iterator;
 
+/**
+ * * BinaryTreeADT defines the interface to a binary tree data structure. *
+ */
 public interface BinaryTreeADT<T> {
     /**
      * Returns a reference to the root element

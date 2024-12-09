@@ -1,5 +1,8 @@
 package dataStructures.ADTS;
 
+/**
+ * * HeapADT defines the interface to a heap data structure. *
+ */
 public interface HeapADT<T> extends BinaryTreeADT<T> {
     /**
      * Adds the specified object to this heap.

@@ -8,8 +8,12 @@ import dataStructures.ADTS.HeapADT;
  *
  */
 public class LinkedHeap<T> extends LinkedBinaryTree<T> implements HeapADT<T> {
+    // Reference to the last node in the heap
     public HeapNode<T> lastNode;
 
+    /**
+     * Constructs an empty heap.
+     */
     public LinkedHeap() {
         super();
     }
@@ -195,6 +199,11 @@ public class LinkedHeap<T> extends LinkedBinaryTree<T> implements HeapADT<T> {
             node.element = temp;
         }
 
+    /**
+     * Removes all elements from the heap and returns them in an unordered list.
+     *
+     * @return an ArrayUnorderedList containing all removed elements
+     */
     public ArrayUnorderedList<T> removeAllElements() {
         ArrayUnorderedList<T> removedElements = new ArrayUnorderedList<>();
 

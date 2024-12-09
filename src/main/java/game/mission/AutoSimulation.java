@@ -7,7 +7,6 @@ import game.character.Entity;
 import game.character.Player;
 import game.data.ImportData;
 import game.exceptions.EmptyBackPackException;
-import game.items.Item;
 import game.map.Room;
 import game.settings.GameSettings;
 
