@@ -4,6 +4,12 @@ import dataStructures.ADTS.GraphADT;
 import dataStructures.exceptions.EmptyCollectionException;
 import java.util.Iterator;
 
+
+/**
+ * A class that represents an undirected graph using an adjacency matrix.
+ *
+ * @param <T> the type of the vertices in the graph
+ */
 public class Graph<T> implements GraphADT<T> {
     protected static int DEFAULT_CAPACITY = 10;
     protected static int EXPANSION_FATORIAL = 2;
@@ -12,18 +18,32 @@ public class Graph<T> implements GraphADT<T> {
     protected boolean[][] adjMatrix;
     protected int numVertices;
 
+    /**
+     * Creates an empty graph with a default capacity.
+     */
     public Graph() {
         this.vertices = (T[]) new Object[DEFAULT_CAPACITY];
         this.adjMatrix = new boolean[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
         this.numVertices = 0;
     }
 
+    /**
+     * Creates an empty graph with a specified initial capacity.
+     *
+     * @param initialCapacity the initial capacity of the graph
+     */
     public Graph(int initialCapacity) {
         this.vertices = (T[]) new Object[initialCapacity];
         this.adjMatrix = new boolean[initialCapacity][initialCapacity];
         this.numVertices = 0;
     }
 
+    /**
+     * Adds a vertex to the graph.
+     *
+     * @param vertex the vertex to be added
+     * @throws IllegalArgumentException if the vertex is null
+     */
     @Override
     public void addVertex(T vertex) {
         if (vertex == null) {
@@ -43,6 +63,9 @@ public class Graph<T> implements GraphADT<T> {
         numVertices++;
     }
 
+    /**
+     * Expands the capacity of the graph's vertices and adjacency matrix.
+     */
     protected void expandCapacity() {
         int newCapacity = numVertices * EXPANSION_FATORIAL;
         T[] newVertices = (T[]) new Object[newCapacity];
@@ -61,6 +84,12 @@ public class Graph<T> implements GraphADT<T> {
         this.adjMatrix = newAdjMatrix;
     }
 
+    /**
+     * Removes a vertex from the graph.
+     *
+     * @param vertex the vertex to be removed
+     * @throws IllegalArgumentException if the vertex is null
+     */
     @Override
     public void removeVertex(T vertex) {
         if (vertex == null) {
@@ -73,6 +102,12 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
+    /**
+     * Removes a vertex by its index in the graph.
+     *
+     * @param index the index of the vertex to be removed
+     * @throws IllegalArgumentException if the index is invalid
+     */
     private void removeVertex(int index) {
         if (!indexIsValid(index)) {
             throw new IllegalArgumentException("Invalid vertex index");
@@ -97,7 +132,12 @@ public class Graph<T> implements GraphADT<T> {
         }
     }
 
-
+    /**
+     * Returns the index of the given vertex.
+     *
+     * @param vertex the vertex whose index is to be found
+     * @return the index of the vertex, or -1 if the vertex is not found
+     */
     protected int getIndex(T vertex) {
         int index = -1;
         for (int i = 0; i < numVertices; i++) {
@@ -109,11 +149,24 @@ public class Graph<T> implements GraphADT<T> {
         return index;
     }
 
+    /**
+     * Adds an edge between two vertices.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     */
     @Override
     public void addEdge(T vertex1, T vertex2) {
         addEdge(getIndex(vertex1), getIndex(vertex2));
     }
 
+    /**
+     * Adds an edge between two vertices by their indices.
+     *
+     * @param indexVertex1 the index of the first vertex
+     * @param indexVertex2 the index of the second vertex
+     * @throws IllegalArgumentException if the indices are invalid
+     */
     private void addEdge(int indexVertex1, int indexVertex2) {
         if (!indexIsValid(indexVertex1) || !indexIsValid(indexVertex2)) {
             throw new IllegalArgumentException("Invalid vertex indices");
@@ -122,20 +175,44 @@ public class Graph<T> implements GraphADT<T> {
         adjMatrix[indexVertex2][indexVertex1] = true;
     }
 
+    /**
+     * Removes an edge between two vertices.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     */
     @Override
     public void removeEdge(T vertex1, T vertex2) {
         removeEdge(getIndex(vertex1), getIndex(vertex2));
     }
 
+    /**
+     * Removes an edge between two vertices by their indices.
+     *
+     * @param indexVertex1 the index of the first vertex
+     * @param indexVertex2 the index of the second vertex
+     */
     private void removeEdge(int indexVertex1, int indexVertex2) {
         adjMatrix[indexVertex1][indexVertex2] = false;
         adjMatrix[indexVertex2][indexVertex1] = false;
     }
 
+    /**
+     * Checks if the given index is valid.
+     *
+     * @param index the index to be checked
+     * @return true if the index is valid, false otherwise
+     */
     protected boolean indexIsValid(int index) {
         return (index < numVertices && index >= 0);
     }
 
+    /**
+     * Performs a Breadth-First Search (BFS) starting from the specified vertex.
+     *
+     * @param startVertex the vertex to start the BFS from
+     * @return an iterator for the BFS traversal
+     */
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
         return iteratorBFS(getIndex(startVertex));
@@ -184,6 +261,12 @@ public class Graph<T> implements GraphADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Performs a Depth-First Search (DFS) starting from the specified vertex.
+     *
+     * @param startVertex the vertex to start the DFS from
+     * @return an iterator for the DFS traversal
+     */
     @Override
     public Iterator<T> iteratorDFS(T startVertex) {
         return iteratorDFS(getIndex(startVertex));
@@ -239,6 +322,13 @@ public class Graph<T> implements GraphADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Returns an iterator representing the shortest path from the start vertex to the target vertex.
+     *
+     * @param startVertex the start vertex
+     * @param targetVertex the target vertex
+     * @return an iterator for the shortest path between the start and target vertices
+     */
     @Override
     public Iterator iteratorShortestPath(T startVertex, T targetVertex) {
         int startIndex = getIndex(startVertex);
@@ -305,11 +395,21 @@ public class Graph<T> implements GraphADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Checks if the graph is empty.
+     *
+     * @return true if the graph is empty, false otherwise
+     */
     @Override
     public boolean isEmpty() {
         return this.numVertices == 0;
     }
 
+    /**
+     * Checks if the graph is connected.
+     *
+     * @return true if the graph is connected, false otherwise
+     */
     @Override
     public boolean isConnected() {
         if (isEmpty()) {
@@ -327,11 +427,21 @@ public class Graph<T> implements GraphADT<T> {
         return counter == numVertices;
     }
 
+    /**
+     * Returns the number of vertices in the graph.
+     *
+     * @return the number of vertices in the graph
+     */
     @Override
     public int size() {
         return this.numVertices;
     }
 
+    /**
+     * Returns a list of vertices in the graph.
+     *
+     * @return a list of vertices in the graph
+     */
     public ArrayUnorderedList<T> getVertices(){
         ArrayUnorderedList<T> newVertices = new ArrayUnorderedList<>();
 
@@ -341,10 +451,18 @@ public class Graph<T> implements GraphADT<T> {
         return newVertices;
     }
 
+    /**
+     * Returns the adjacency matrix of the graph.
+     *
+     * @return the adjacency matrix
+     */
     public boolean[][] getAdjMatrix(){
         return this.adjMatrix;
     }
 
+    /**
+     * Prints a visualization of the graph's vertices and their connections.
+     */
     public void printGraph() {
         ArrayUnorderedList<T> vertices = this.getVertices();
         boolean[][] adjMatrix = this.getAdjMatrix();
@@ -378,6 +496,11 @@ public class Graph<T> implements GraphADT<T> {
         System.out.println("===========================");
     }
 
+    /**
+     * Returns a string representation of the graph, including the adjacency matrix and vertex values.
+     *
+     * @return a string representation of the graph
+     */
     @Override
     public String toString() {
         if (numVertices == 0) {
@@ -420,6 +543,13 @@ public class Graph<T> implements GraphADT<T> {
         return result;
     }
 
+    /**
+     * Retrieves the neighbors of a specified vertex in the graph.
+     * Neighbors are defined as vertices that are directly connected to the specified vertex via an edge.
+     *
+     * @param element the vertex whose neighbors are to be found
+     * @return an ArrayUnorderedList containing the neighbors of the specified vertex
+     */
     public ArrayUnorderedList<T> getNeighbours(T element){
         int elementIndex = getIndex(element);
         ArrayUnorderedList<T> neighbours = new ArrayUnorderedList<>();

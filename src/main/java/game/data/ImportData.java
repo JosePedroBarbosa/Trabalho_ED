@@ -26,15 +26,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * The ImportData class handles the importing of game and mission data from JSON files.
+ * It reads settings, mission details, and simulation results to initialize game components like rooms, enemies, items, etc.
+ */
 public class ImportData {
+    // Paths to the JSON files
     private static String currentMissionSettingsPath = ".\\src\\missions\\Mission1.json";
     private static String gameSettingsPath = ".\\src\\settings\\GameSettings.json";
     private static String simulationResultsPath = ".\\src\\exportedSimulations\\ManualSimulations.json";
 
+    /**
+     * Imports the current mission data from the predefined path.
+     */
     public void importCurrentMissionData() {
         importMissionData(currentMissionSettingsPath);
     }
 
+    /**
+     * Imports mission data from the specified JSON file path.
+     * This method reads the mission configuration and sets up the map, rooms, enemies, items, and target.
+     *
+     * @param missionPath the path to the mission JSON file
+     */
     public void importMissionData(String missionPath){
         JSONParser parser = new JSONParser();
 
@@ -81,6 +95,9 @@ public class ImportData {
 
     }
 
+    /**
+     * Imports game settings from a JSON file and updates the game settings.
+     */
     public void importGameSettingsData(){
         JSONParser parser = new JSONParser();
 
@@ -103,9 +120,14 @@ public class ImportData {
         }
 
     }
-    /*
-    TARGET
-    */
+
+    /**
+     * Converts a target JSON object to a Target object.
+     *
+     * @param targetJson the JSON representation of the target
+     * @param rooms the list of available rooms
+     * @return the Target object
+     */
     private Target jsonToTarget(JSONObject targetJson, ArrayUnorderedList<Room> rooms) {
         Room room = getRoom(rooms, (String) targetJson.get("divisao"));
         String type = (String) targetJson.get("tipo");
@@ -114,9 +136,12 @@ public class ImportData {
         return new Target(room, type);
     }
 
-    /*
-    ROOMS
-    */
+    /**
+     * Converts a JSON array of rooms to a list of Room objects.
+     *
+     * @param roomsJson the JSON array of room names
+     * @return the list of Room objects
+     */
     private ArrayUnorderedList<Room> jsonToRooms(JSONArray roomsJson){
         ArrayUnorderedList<Room> rooms = new ArrayUnorderedList<>(roomsJson.size());
 
@@ -126,6 +151,13 @@ public class ImportData {
         return rooms;
     }
 
+    /**
+     * Converts a JSON array of rooms to a list of Room objects, using an existing list of rooms for reference.
+     *
+     * @param rooms the list of existing rooms
+     * @param roomsJson the JSON array of room names
+     * @return the new list of Room objects
+     */
     private ArrayUnorderedList<Room> jsonToRooms(ArrayUnorderedList<Room> rooms, JSONArray roomsJson){
         ArrayUnorderedList<Room> newRooms = new ArrayUnorderedList<>(roomsJson.size());
 
@@ -135,6 +167,13 @@ public class ImportData {
         return newRooms;
     }
 
+    /**
+     * Imports connections between rooms from a JSON array and adds them to the map.
+     *
+     * @param map the game map
+     * @param rooms the list of rooms
+     * @param connectionsJson the JSON array of connections between rooms
+     */
     private void importConnectionsFromJson(Map map, ArrayUnorderedList<Room> rooms, JSONArray connectionsJson) {
         for(int i = 0; i < connectionsJson.size(); i++) {
             JSONArray connection = (JSONArray) connectionsJson.get(i);
@@ -147,6 +186,13 @@ public class ImportData {
 
     }
 
+    /**
+     * Retrieves a Room object by its name from the list of rooms.
+     *
+     * @param rooms the list of rooms
+     * @param name the name of the room
+     * @return the Room object with the specified name, or null if not found
+     */
     private Room getRoom(ArrayUnorderedList<Room> rooms, String name) {
         for(Room room : rooms) {
             if(room.getName().equals(name)) {
@@ -156,12 +202,12 @@ public class ImportData {
         return null;
     }
 
-    /*
-    ITEMS
-     */
-
-    /*
-    ALTERAR AS ROOMS (CHAMAR O METODO GETROOM())
+    /**
+     * Converts a JSON array of items to a list of Item objects.
+     *
+     * @param itemsJSON the JSON array of items
+     * @param rooms the list of rooms where items are placed
+     * @return the list of Item objects
      */
     private ArrayUnorderedList<Item> jsonToItems(JSONArray itemsJSON, ArrayUnorderedList<Room> rooms){
         ArrayUnorderedList<Item> items = new ArrayUnorderedList<>(itemsJSON.size());
@@ -173,6 +219,13 @@ public class ImportData {
         return items;
     }
 
+    /**
+     * Converts a JSON object to an Item object (either HealthKit or Shield).
+     *
+     * @param itemJSON the JSON representation of the item
+     * @param rooms the list of rooms where the item is placed
+     * @return the Item object
+     */
     private Item jsonToItem(JSONObject itemJSON, ArrayUnorderedList<Room> rooms){
         Room room = getRoom(rooms, (String) itemJSON.get("divisao"));
 
@@ -188,10 +241,14 @@ public class ImportData {
         return item;
     }
 
-    /*
-    ENEMIES
-    */
 
+    /**
+     * Converts a JSON array of enemies to a list of Enemy objects.
+     *
+     * @param enemiesJson the JSON array of enemies
+     * @param rooms the list of rooms where enemies are placed
+     * @return the list of Enemy objects
+     */
     private ArrayUnorderedList<Enemy> jsonToEnemies(JSONArray enemiesJson, ArrayUnorderedList<Room> rooms){
         ArrayUnorderedList<Enemy> enemies = new ArrayUnorderedList<>(enemiesJson.size());
 
@@ -201,6 +258,13 @@ public class ImportData {
         return enemies;
     }
 
+    /**
+     * Converts a JSON object to an Enemy object.
+     *
+     * @param enemyJson the JSON representation of the enemy
+     * @param rooms the list of rooms where the enemy is located
+     * @return the Enemy object
+     */
     private Enemy jsonToEnemy(JSONObject enemyJson, ArrayUnorderedList<Room> rooms){
         String name = (String) enemyJson.get("nome");
         int power = ((Long) enemyJson.get("poder")).intValue();
@@ -212,6 +276,11 @@ public class ImportData {
         return enemy;
     }
 
+    /**
+     * Imports simulation codes from the simulation results JSON file.
+     *
+     * @return a list of mission codes found in the simulation results
+     */
     public static ArrayUnorderedList<String> importSimulationCodesResults(){
         JSONParser parser = new JSONParser();
         ArrayUnorderedList<String> missionCodes = new ArrayUnorderedList<>();
@@ -240,6 +309,12 @@ public class ImportData {
         return missionCodes;
     }
 
+    /**
+     * Imports simulation results for a given mission code from the simulation results JSON file.
+     *
+     * @param selectedCode the mission code for which simulation results are to be imported
+     * @return a list of SimulationResults objects corresponding to the selected mission code
+     */
     public static ArrayOrderedList<SimulationResults> importSimulationResultsByCode(String selectedCode){
         ArrayOrderedList<SimulationResults> results = new ArrayOrderedList<>();
 
@@ -266,6 +341,12 @@ public class ImportData {
         return results;
     }
 
+    /**
+     * Converts a JSON object to a SimulationResults object.
+     *
+     * @param object the JSON representation of the simulation result
+     * @return the SimulationResults object
+     */
     public static SimulationResults jsonToSimulationResults(JSONObject object){
         String codeMission = (String) object.get("cod-missao");
         int version = ((Long) object.get("versao")).intValue();

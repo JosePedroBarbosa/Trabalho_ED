@@ -4,21 +4,43 @@ import dataStructures.ADTS.NetworkADT;
 
 import java.util.Iterator;
 
+/**
+ * Represents a weighted undirected network.
+ *
+ * @param <T> the type of the vertices in the network
+ */
 public class Network<T> extends Graph<T> implements NetworkADT<T> {
     protected double[][] adjMatrix;
 
+    /**
+     * Constructs a new empty network with default capacity.
+     */
     public Network(){
         numVertices = 0;
         this.adjMatrix = new double[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
         this.vertices = (T[]) (new Object[DEFAULT_CAPACITY]);
     }
 
+    /**
+     * Adds an edge between two vertices in the network with a given weight.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     * @param weight the weight of the edge
+     */
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
         super.addEdge(vertex1, vertex2); //add in the graph matrix
         this.addEdge(getIndex(vertex1), getIndex(vertex2), weight);
     }
 
+    /**
+     * Adds an edge between two vertices in the network given their indices and weight.
+     *
+     * @param index1 the index of the first vertex
+     * @param index2 the index of the second vertex
+     * @param weight the weight of the edge
+     */
     public void addEdge(int index1, int index2, double weight) {
         if(indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = weight;
@@ -26,10 +48,24 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
     }
 
+    /**
+     * Returns the weight of the edge between two vertices.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     * @return the weight of the edge, or {@code Double.POSITIVE_INFINITY} if no edge exists
+     */
     public double getEdgeWeight(T vertex1, T vertex2) {
         return getEdgeWeight(getIndex(vertex1), getIndex(vertex2));
     }
 
+    /**
+     * Returns the weight of the edge between two vertices given their indices.
+     *
+     * @param index1 the index of the first vertex
+     * @param index2 the index of the second vertex
+     * @return the weight of the edge, or Double.POSITIVE_INFINITY if no edge exists
+     */
     private double getEdgeWeight(int index1, int index2) {
         if(indexIsValid(index1) && indexIsValid(index2)) {
             return adjMatrix[index1][index2];
@@ -37,11 +73,23 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return Double.POSITIVE_INFINITY;
     }
 
+    /**
+     * Removes the edge between two vertices.
+     *
+     * @param vertex1 the first vertex
+     * @param vertex2 the second vertex
+     */
     @Override
     public void removeEdge(T vertex1, T vertex2) {
         removeEdge(getIndex(vertex1), getIndex(vertex2));
     }
 
+    /**
+     * Removes the edge between two vertices given their indices.
+     *
+     * @param index1 the index of the first vertex
+     * @param index2 the index of the second vertex
+     */
     public void removeEdge(int index1, int index2) {
         if(indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = Double.POSITIVE_INFINITY;
@@ -49,6 +97,13 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
     }
 
+    /**
+     * Adds a new vertex to the network.
+     * If the network is at max capacity, it will expand.
+     *
+     * @param vertex the vertex to add
+     * @throws IllegalArgumentException if the vertex is null
+     */
     @Override
     public void addVertex(T vertex){
         if (vertex == null) {
@@ -66,6 +121,9 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         super.addVertex(vertex); //add vertex in the graph
     }
 
+    /**
+     * Expands the capacity of the network by a factor of EXPANSION_FATORIAL.
+     */
     public void expandNetworkCapacity(){
         int newCapacity = numVertices * EXPANSION_FATORIAL;
         double[][] newAdjMatrix = new double[newCapacity][newCapacity];
@@ -78,11 +136,23 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         this.adjMatrix = newAdjMatrix;
     }
 
+    /**
+     * Returns an iterator for depth-first search (DFS) traversal starting from the given vertex.
+     *
+     * @param startVertex the starting vertex
+     * @return an iterator for the DFS traversal
+     */
     @Override
     public Iterator<T> iteratorDFS(T startVertex){
         return iteratorDFS(getIndex(startVertex));
     }
 
+    /**
+     * Returns an iterator for depth-first search (DFS) traversal starting from the given vertex index.
+     *
+     * @param startIndex the index of the starting vertex
+     * @return an iterator for the DFS traversal
+     */
     public Iterator<T> iteratorDFS(int startIndex){
         Integer x;
         boolean found;
@@ -123,11 +193,23 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Returns an iterator for breadth-first search (BFS) traversal starting from the given vertex.
+     *
+     * @param startVertex the starting vertex
+     * @return an iterator for the BFS traversal
+     */
     @Override
     public Iterator<T> iteratorBFS(T startVertex) {
         return iteratorBFS(getIndex(startVertex));
     }
 
+    /**
+     * Returns an iterator for breadth-first search (BFS) traversal starting from the given vertex index.
+     *
+     * @param startIndex the index of the starting vertex
+     * @return an iterator for the BFS traversal
+     */
     public Iterator<T> iteratorBFS(int startIndex) {
         Integer x;
         LinkedQueue<Integer> traversalQueue = new LinkedQueue<>();
@@ -161,6 +243,13 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Finds the shortest path between two vertices and returns the path as a list of vertices.
+     *
+     * @param startVertex the starting vertex
+     * @param endVertex the destination vertex
+     * @return an ArrayUnorderedList of vertices representing the shortest path
+     */
     public ArrayUnorderedList<T> shortestPath(T startVertex, T endVertex) {
         Iterator<Integer> it = iteratorShortestPathIndices(getIndex(startVertex), getIndex(endVertex));
         ArrayUnorderedList<T> path = new ArrayUnorderedList<>();
@@ -172,11 +261,26 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return path;
     }
 
+    /**
+     * Returns an iterator for the shortest path between the specified vertices.
+     *
+     * @param startVertex The starting vertex.
+     * @param endVertex The destination vertex.
+     * @return An iterator for the shortest path between the provided vertices.
+     */
     @Override
     public Iterator<T> iteratorShortestPath(T startVertex, T endVertex) {
         return shortestPath(startVertex, endVertex).iterator();
     }
 
+    /**
+     * The shortest path between two vertices given their indices, returning
+     * an iterator with the indices of the vertices in the shortest path.
+     *
+     * @param startIndex The index of the starting vertex.
+     * @param targetIndex The index of the destination vertex.
+     * @return An iterator containing the indices of the vertices in the shortest path.
+     */
     protected Iterator<Integer> iteratorShortestPathIndices(int startIndex, int targetIndex) {
         int index;
         double weight;
@@ -254,6 +358,15 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return resultList.iterator();
     }
 
+    /**
+     * Finds the index of an adjacent vertex that has the specified weight,
+     * and has been visited.
+     *
+     * @param visited A boolean array indicating whether each vertex has been visited.
+     * @param pathWeight An array containing the path weights for each vertex.
+     * @param weight The weight to be found.
+     * @return The index of the adjacent vertex with the specified weight, or -1 if none is found.
+     */
     protected int getIndexOfAdjVertexWithWeightOf(boolean[] visited, double[] pathWeight, double weight) {
         for(int i = 0; i < numVertices; i++){
             if((pathWeight[i] == weight) && !visited[i]){
@@ -267,6 +380,12 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return -1;
     }
 
+    /**
+     * Returns the Minimum Spanning Tree (MST) of the graph.
+     * A new graph representing the MST is created and returned.
+     *
+     * @return A new graph representing the Minimum Spanning Tree (MST) of the graph.
+     */
     public Network<T> mstNetwork(){
         int x, y;
         int index;
@@ -346,6 +465,13 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return resultGraph;
     }
 
+    /**
+     * Finds the edge with the specified weight, where one vertex has been visited and the other has not.
+     *
+     * @param weight The weight of the edge to be found.
+     * @param visited A boolean array indicating whether each vertex has been visited.
+     * @return An array with the indices of the vertices connected by the edge with the specified weight.
+     */
     protected int[] getEdgeWithWeightOf(double weight, boolean[] visited) {
         int[] edge = new int[2];
         for (int i = 0; i < numVertices; i++) {
@@ -363,11 +489,25 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return edge;
     }
 
+    /**
+     * Calculates the weight of the shortest path between two vertices by their values.
+     *
+     * @param vertex1 The starting vertex.
+     * @param vertex2 The destination vertex.
+     * @return The weight of the shortest path, or Double.POSITIVE_INFINITY if no path exists.
+     */
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
         return shortestPathWeight(getIndex(vertex1), getIndex(vertex2));
     }
 
+    /**
+     * Calculates the weight of the shortest path between two vertices specified by their indices.
+     *
+     * @param startIndex The index of the starting vertex.
+     * @param targetIndex The index of the destination vertex.
+     * @return The total weight of the shortest path between the vertices, or Double.POSITIVE_INFINITY if no path exists.
+     */
     public double shortestPathWeight(int startIndex, int targetIndex) {
         double result = 0;
         if(!indexIsValid(startIndex) || !indexIsValid(targetIndex)){
