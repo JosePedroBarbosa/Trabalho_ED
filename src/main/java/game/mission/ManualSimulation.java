@@ -19,10 +19,29 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 
-public class ManualSimulation {
+/**
+ * Class responsible for simulating a manual mission execution.
+ * The player can choose their movements and actions while the program handles game logic.
+ */
+public class ManualSimulation extends Simulation{
+
+    /**
+     * The status of the mission: true if successful, false otherwise.
+     */
     private static boolean missionSuccess;
+
+    /**
+     * The route taken by the player during the simulation.
+     */
     private static ArrayUnorderedList<Room> simulationRoute;
 
+    /**
+     * Simulates the mission gameplay manually by allowing the player to interact with the mission.
+     *
+     * @param mission the current mission to simulate.
+     * @param scanner the input scanner for reading player inputs.
+     * @throws NoMissionInstantiated if no mission has been instantiated.
+     */
     public static void manualSimulation(Mission mission, Scanner scanner) throws NoMissionInstantiated {
         ImportData importer = new ImportData();
         importer.importCurrentMissionData();
@@ -43,10 +62,12 @@ public class ManualSimulation {
         ExportData.saveManualSimulationToJson(mission, simulationRoute, missionSuccess);
     }
 
+
     /**
-     * print the rooms
-     * @param rooms the rooms to print
-     * @param message the message to show
+     * Prints the available rooms with a specified message.
+     *
+     * @param rooms   the rooms to display.
+     * @param message the message to display before the list of rooms.
      */
     public static void printRooms(ArrayUnorderedList<Room> rooms, String message){
         System.out.println(message);
@@ -57,11 +78,12 @@ public class ManualSimulation {
     }
 
     /**
-     * Returns the user choice of a room
-     * @param rooms the available rooms
-     * @param message The message to print
-     * @param scanner the scanner
-     * @return the selected room
+     * Allows the user to select a room from a list of available rooms.
+     *
+     * @param rooms   the list of available rooms.
+     * @param message the prompt message for the user.
+     * @param scanner the input scanner for reading player inputs.
+     * @return the selected room.
      */
     public static Room selectRoom(ArrayUnorderedList<Room> rooms, String message, Scanner scanner){
         printRooms(rooms, message);
@@ -86,55 +108,11 @@ public class ManualSimulation {
     }
 
     /**
-     * Moves the player to a specified room.
+     * Handles the player's turn and the corresponding actions based on their input.
      *
-     * @param mission the mission
-     * @param room the target room to move the player to
-     * @throws IllegalArgumentException if the mission or target room is null
-     */
-    public static void movePlayerToRoom(Mission mission, Room room){
-        if (mission == null || room == null) {
-            throw new IllegalArgumentException("Mission or room cannot be null.");
-        }
-
-        Player player = mission.getPlayer();
-        Room currentRoom = player.getCurrentRoom();
-
-        if (currentRoom != null) {
-            currentRoom.removePlayer();
-        }
-        player.setCurrentRoom(room);
-        player.getCurrentRoom().setPlayer(player);
-
-        System.out.println("Player Moved To " + room.getName());
-        simulationRoute.addToRear(room);
-
-        for(Item item : player.getCurrentRoom().getItems()){
-            if(item != null){
-                player.collectItem(item);
-            }
-        }
-    }
-
-    public static void moveEnemyToRoom(Mission mission, Enemy enemy, Room room){
-        if (mission == null || room == null) {
-            throw new IllegalArgumentException("Mission and room cannot be null.");
-        }
-
-        Room currentRoom = enemy.getCurrentRoom();
-
-        if (currentRoom != null) {
-            enemy.getCurrentRoom().removeEnemy(enemy);
-        }
-        enemy.setCurrentRoom(room);
-        enemy.getCurrentRoom().addEnemy(enemy);
-    }
-
-    /**
-     *
-     * @param mission
-     * @param scanner
-     * @return true if the game ends, false otherwise
+     * @param mission the current mission being played.
+     * @param scanner the input scanner for reading player inputs.
+     * @return true if the game ends, false otherwise.
      */
     public static boolean playerTurn(Mission mission, Scanner scanner){
         int choice = printOptions(mission, scanner);;
@@ -149,6 +127,7 @@ public class ManualSimulation {
                     nextRoom = selectRoom(mission.getMissionMap().getMap().getNeighbours(mission.getPlayer().getCurrentRoom()), "Available Rooms: ", scanner);
                 }
                 movePlayerToRoom(mission, nextRoom);
+                simulationRoute.addToRear(nextRoom);
 
                 if (mission.getTarget().getCurrentRoom().equals(nextRoom)) {
                     if (nextRoom.hasEnemies()) {
@@ -313,6 +292,13 @@ public class ManualSimulation {
         }
     }
 
+    /**
+     * Handles the attack sequence during a confrontation when the Player has priority.
+     * The Player may attack or use an item depending on their life and backpack availability.
+     *
+     * @param player the Player engaging in the confrontation.
+     * @param scanner the input scanner for player actions.
+     */
     public static void attackSequence(Player player, Scanner scanner){
         boolean confrontationEnd = false;
 
@@ -358,6 +344,13 @@ public class ManualSimulation {
         }
     }
 
+    /**
+     * Handles the attack sequence during a confrontation when the Enemy has priority.
+     * The Enemy attacks the Player, and the Player retaliates if still alive.
+     *
+     * @param enemy the Enemy engaging in the confrontation.
+     * @param scanner the input scanner for player actions.
+     */
     public static void attackSequence(Enemy enemy, Scanner scanner){
         boolean confrontationEnd = false;
 
@@ -366,7 +359,6 @@ public class ManualSimulation {
 
             if (playerInTheRoom == null) {
                 System.out.println("No Player To Attack, Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
@@ -375,7 +367,6 @@ public class ManualSimulation {
 
             if (!playerInTheRoom.isAlive()) {
                 System.out.println("The Player Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
@@ -403,19 +394,24 @@ public class ManualSimulation {
 
             if (!enemy.isAlive()) {
                 System.out.println("The Enemy Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
             if (playerInTheRoom.getCurrentRoom().getEnemies().isEmpty()) {
                 System.out.println("All Enemies In The Room Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
         }
     }
 
+    /**
+     * Retrieves and validates the player's choice from the menu options.
+     *
+     * @param scanner the input scanner for user input.
+     * @param hasItems a boolean indicating if the player has items available for use.
+     * @return the validated choice entered by the player.
+     */
     private static int getPlayerChoice(Scanner scanner, boolean hasItems) {
         while (true) {
             try {
@@ -435,16 +431,14 @@ public class ManualSimulation {
         }
     }
 
-    private static ArrayUnorderedList<Enemy> filterEnemiesNotInPlayerRoom(Mission mission) {
-        ArrayUnorderedList<Enemy> filteredEnemies = new ArrayUnorderedList<>();
-        for (Enemy enemy : mission.getEnemies()) {
-            if (enemy != null && !enemy.getCurrentRoom().equals(mission.getPlayer().getCurrentRoom())) {
-                filteredEnemies.addToRear(enemy);
-            }
-        }
-        return filteredEnemies;
-    }
-
+    /**
+     * Handles random movement for all enemies in the mission.
+     * If an enemy moves into the same room as the player, an immediate confrontation occurs.
+     *
+     * @param mission the mission containing the game state.
+     * @param enemies the list of enemies to move.
+     * @param scanner the input scanner for player interactions.
+     */
     public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies, Scanner scanner){
         Random rand = new Random();
         int maxEnemyMoves = GameSettings.getMaxEnemyMoves();
@@ -478,6 +472,11 @@ public class ManualSimulation {
         }
     }
 
+    /**
+     * Prints the shortest path from the player's current room to the mission's target room.
+     *
+     * @param mission the mission containing the map and player details.
+     */
     private static void printBestPathToTarget(Mission mission){
         Iterator it = mission.getMissionMap().getMap().iteratorShortestPath(mission.getPlayer().getCurrentRoom(), mission.getTarget().getCurrentRoom());
 
@@ -491,6 +490,11 @@ public class ManualSimulation {
         System.out.println();
     }
 
+    /**
+     * Finds and prints the shortest path from the player's current room to the nearest health kit in the mission.
+     *
+     * @param mission the mission containing items and map details.
+     */
     private static void printBestPathToHealthKit(Mission mission) {
         ArrayUnorderedList<Item> missionItems = mission.getItems();
         HealthKit targetHealthKit = null;
@@ -539,6 +543,12 @@ public class ManualSimulation {
         System.out.println();
     }
 
+
+    /**
+     * Prints the current status of the mission, including player health, enemies, and items.
+     *
+     * @param mission the mission containing the game state.
+     */
     private static void printMissionStatus(Mission mission) {
         System.out.println("=== MISSION DETAILS ===");
         System.out.println("Current Location: " + (mission.getPlayer().getCurrentRoom() != null ? mission.getPlayer().getCurrentRoom().getName() : "Outside of the building"));
@@ -578,6 +588,13 @@ public class ManualSimulation {
         System.out.println("=============================");
     }
 
+    /**
+     * Displays the player's options during their turn and validates their choice.
+     *
+     * @param mission the mission containing the game state.
+     * @param scanner the input scanner for player interactions.
+     * @return the validated option chosen by the player.
+     */
     public static int printOptions(Mission mission, Scanner scanner){
 
         boolean canUseItem = mission.getPlayer().getBackpack().getBackpackSize() > 0;

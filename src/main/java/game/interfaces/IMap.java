@@ -1,6 +1,7 @@
 package game.interfaces;
 
 import dataStructures.implementations.Graph;
+import dataStructures.implementations.Network;
 import game.map.Room;
 
 /**
@@ -28,10 +29,9 @@ public interface IMap {
     public void printMap();
 
     /**
-     * Retrieves the internal graph structure that represents the game map.
+     * Retrieves the network representation of the map.
      *
-     * @return The graph representing the map, with rooms as nodes and connections as edges.
+     * @return The network representing the map.
      */
-    public Graph<Room> getMap();
-
+    public Network<Room> getMap();
 }

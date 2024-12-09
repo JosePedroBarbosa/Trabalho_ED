@@ -13,9 +13,20 @@ import game.settings.GameSettings;
 
 import java.util.Random;
 
-public class AutoSimulation {
+/**
+ * Class responsible for simulating an automatic mission execution.
+ * It handles player decisions, enemy movements, and interactions.
+ */
+public class AutoSimulation extends Simulation {
+
     private static Network<Room> currentNetwork;
 
+    /**
+     * Executes the auto-simulation of the game based on the given mission.
+     * The simulation ends when the mission is completed or the player dies.
+     *
+     * @param mission the mission to be simulated.
+     */
     public static void autoSimulation(Mission mission){
         ImportData importer = new ImportData();
         importer.importCurrentMissionData();
@@ -37,6 +48,11 @@ public class AutoSimulation {
         System.out.println("Player health: " + mission.getPlayer().getLife() + "HP");
     }
 
+    /**
+     * Updates the edge weights of the mission's network graph based on room conditions.
+     *
+     * @param mission the mission.
+     */
     private static void updateCurrentNetwork(Mission mission){
         ArrayUnorderedList<Room> missionRooms = currentNetwork.getVertices();
 
@@ -53,6 +69,13 @@ public class AutoSimulation {
         }
     }
 
+    /**
+     * Calculates the weight of an edge between two rooms based on the number and power of enemies in the next room.
+     *
+     * @param currentRoom the current room.
+     * @param nextRoom    the next room.
+     * @return the calculated edge weight.
+     */
     public static double calculateEdgeWeigth(Room currentRoom, Room nextRoom){
         double weight = 0;
 
@@ -69,6 +92,12 @@ public class AutoSimulation {
         return weight;
     }
 
+    /**
+     * Handles the player's turn, determining the best action and executing it.
+     *
+     * @param mission the current mission.
+     * @return true if the game is over, false otherwise.
+     */
     private static boolean playerTurn(Mission mission){
         int bestChoice = getBestPlayerAction(mission);
         switch(bestChoice) {
@@ -114,6 +143,15 @@ public class AutoSimulation {
         return false;
     }
 
+    /**
+     * Determines the best action for the player to take based on the current game state.
+     *
+     * @param mission the current mission.
+     * @return an integer representing the action to take:
+     * 0 - Exit the building.
+     * 1 - Move to a new room.
+     * 2 - Use a health kit.
+     */
     public static int getBestPlayerAction(Mission mission){
         Player player = mission.getPlayer();
         //If the player has the target and is near to an entrance/exit he should leave
@@ -225,7 +263,13 @@ public class AutoSimulation {
         }
     }
 
-    // QUAL É A MELHOR SALA PARA SE MOVER PARA QUE ELE TOME O MENOR DANO POSSIVEL
+    /**
+     * Determines the best room for the player to move into, minimizing potential damage.
+     * Considers the player's current state and mission objectives (target or exit).
+     *
+     * @param mission the current mission containing the player and rooms.
+     * @return the next room the player should move to.
+     */
     public static Room getBestRoomToMove(Mission mission){
         ArrayUnorderedList<Room> bestPath;
 
@@ -244,20 +288,46 @@ public class AutoSimulation {
         return bestPath.getByIndex(1);
     }
 
+    /**
+     * Finds the best entrance for the player to move toward the target room.
+     *
+     * @param mission the current mission containing the player and the map.
+     * @return the best entrance/exit room for the player.
+     */
     public static Room getBestEntranceToMove(Mission mission) {
         return getBestRoom(mission.getEntriesAndExits(), mission.getTarget().getCurrentRoom());
     }
 
+    /**
+     * Calculates the best path for the player to reach the target's room.
+     *
+     * @param mission the current mission containing the player and the target.
+     * @return a list of rooms representing the best path to the target.
+     */
     public static ArrayUnorderedList<Room> getBestPathToTarget(Mission mission) {
         return currentNetwork.shortestPath(mission.getPlayer().getCurrentRoom(), mission.getTarget().getCurrentRoom());
     }
 
+    /**
+     * Calculates the best path for the player to reach the nearest exit room.
+     *
+     * @param mission the current mission containing the player and rooms.
+     * @return a list of rooms representing the best path to an exit.
+     */
     public static ArrayUnorderedList<Room> getBestPathToExit(Mission mission) {
         Room bestExit = getBestRoom(mission.getEntriesAndExits(), mission.getPlayer().getCurrentRoom());
 
         return bestExit != null ? currentNetwork.shortestPath(mission.getPlayer().getCurrentRoom(), bestExit) : null;
     }
 
+
+    /**
+     * Finds the best room from a list of rooms based on the shortest path to a target room.
+     *
+     * @param rooms the list of candidate rooms.
+     * @param target the target room to evaluate against.
+     * @return the best room with the shortest path to the target.
+     */
     private static Room getBestRoom(ArrayUnorderedList<Room> rooms, Room target) {
         if (rooms == null || target == null) {
             return null;
@@ -279,6 +349,12 @@ public class AutoSimulation {
         return bestRoom;
     }
 
+    /**
+     * Calculates the total weight of a path between rooms.
+     *
+     * @param path the list of rooms representing the path.
+     * @return the total weight of the path.
+     */
     private static double calculatePathWeight(ArrayUnorderedList<Room> path) {
         double totalWeight = 0;
 
@@ -290,45 +366,12 @@ public class AutoSimulation {
     }
 
     /**
-     * Moves the player to a specified room.
+     * Moves enemies randomly throughout the building.
+     * Enemies may move multiple times, and if an enemy enters the player's room, a confrontation is triggered.
      *
-     * @param mission the mission
-     * @param room the target room to move the player to
-     * @throws IllegalArgumentException if the mission or target room is null
+     * @param mission the current mission containing the enemies and rooms.
+     * @param enemies the list of enemies to move.
      */
-    public static void movePlayerToRoom(Mission mission, Room room){
-        if (mission == null || room == null) {
-            throw new IllegalArgumentException("Mission or room cannot be null.");
-        }
-
-        Player player = mission.getPlayer();
-        Room currentRoom = player.getCurrentRoom();
-
-        if (currentRoom != null) {
-            currentRoom.removePlayer();
-        }
-        player.setCurrentRoom(room);
-        player.getCurrentRoom().setPlayer(player);
-
-        System.out.println("Player Moved To " + room.getName());
-
-        for(Item item : player.getCurrentRoom().getItems()){
-            if(item != null){
-                player.collectItem(item);
-            }
-        }
-    }
-
-    private static ArrayUnorderedList<Enemy> filterEnemiesNotInPlayerRoom(Mission mission) {
-        ArrayUnorderedList<Enemy> filteredEnemies = new ArrayUnorderedList<>();
-        for (Enemy enemy : mission.getEnemies()) {
-            if (enemy != null && !enemy.getCurrentRoom().equals(mission.getPlayer().getCurrentRoom())) {
-                filteredEnemies.addToRear(enemy);
-            }
-        }
-        return filteredEnemies;
-    }
-
     public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies){
         Random rand = new Random();
         int maxEnemyMoves = GameSettings.getMaxEnemyMoves();
@@ -362,20 +405,6 @@ public class AutoSimulation {
         }
     }
 
-    public static void moveEnemyToRoom(Mission mission, Enemy enemy, Room room){
-        if (mission == null || room == null) {
-            throw new IllegalArgumentException("Mission and room cannot be null.");
-        }
-
-        Room currentRoom = enemy.getCurrentRoom();
-
-        if (currentRoom != null) {
-            enemy.getCurrentRoom().removeEnemy(enemy);
-        }
-        enemy.setCurrentRoom(room);
-        enemy.getCurrentRoom().addEnemy(enemy);
-    }
-
     /**
      * Handles a confrontation based on the priority entity.
      * @param priorityEntity the entity with priority (Player or Enemy).
@@ -392,6 +421,12 @@ public class AutoSimulation {
         }
     }
 
+    /**
+     * Handles the attack sequence during a confrontation when the Player has priority.
+     * The Player may attack or use an item depending on their life and backpack availability.
+     *
+     * @param player the Player engaging in the confrontation.
+     */
     public static void attackSequence(Player player){
         boolean confrontationEnd = false;
 
@@ -429,6 +464,13 @@ public class AutoSimulation {
         }
     }
 
+
+    /**
+     * Handles the attack sequence during a confrontation when the Enemy has priority.
+     * The Enemy attacks the Player, and the Player retaliates if still alive.
+     *
+     * @param enemy the Enemy engaging in the confrontation.
+     */
     public static void attackSequence(Enemy enemy){
         boolean confrontationEnd = false;
 
@@ -437,7 +479,6 @@ public class AutoSimulation {
 
             if (playerInTheRoom == null) {
                 System.out.println("No Player To Attack, Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
@@ -446,7 +487,6 @@ public class AutoSimulation {
 
             if (!playerInTheRoom.isAlive()) {
                 System.out.println("The Player Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
@@ -466,24 +506,29 @@ public class AutoSimulation {
 
             if (!enemy.isAlive()) {
                 System.out.println("The Enemy Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
             if (playerInTheRoom.getCurrentRoom().getEnemies().isEmpty()) {
                 System.out.println("All Enemies In The Room Died, The Confrontation Ended");
-                confrontationEnd = true;
                 break;
             }
 
         }
     }
 
+    /**
+     * Determines the best choice for the Player during an attack sequence.
+     * If the Player has items and low health, they prioritize using an item.
+     *
+     * @param hasItems true if the Player has items available in their backpack.
+     * @param playerLife the current life of the Player.
+     * @return true if the Player should use an item, false otherwise.
+     */
     private static boolean getBestChoice(boolean hasItems, int playerLife) {
         if(hasItems && playerLife < 50){
             return true;
         }
-
         return false;
     }
 
