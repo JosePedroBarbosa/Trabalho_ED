@@ -7,6 +7,7 @@ import game.character.Entity;
 import game.character.Player;
 import game.data.ImportData;
 import game.exceptions.EmptyBackPackException;
+import game.items.Item;
 import game.map.Room;
 import game.settings.GameSettings;
 
@@ -51,7 +52,12 @@ public class AutoSimulation extends Simulation {
     /**
      * Updates the edge weights of the mission's network graph based on room conditions.
      *
-     * @param mission the mission.
+     * This method recalculates the weights of all edges in the network, representing the
+     * difficulty or desirability of moving between rooms based on their conditions (e.g.,
+     * presence of enemies, items, and nearby threats). The weights are updated using
+     * the `calculateRoomWeight` method.
+     *
+     * @param mission the mission for which the network is being updated.
      */
     private static void updateCurrentNetwork(Mission mission) {
         ArrayUnorderedList<Room> missionRooms = currentNetwork.getVertices();
@@ -60,9 +66,9 @@ public class AutoSimulation extends Simulation {
             Room currentRoom = missionRooms.getByIndex(i - 1);
             for (int j = 0; j < missionRooms.size(); j++) {
                 Room nextRoom = missionRooms.getByIndex(j);
-                //If has connection to the room
+                // If there is a connection between the rooms
                 if (currentNetwork.getEdgeWeight(currentRoom, nextRoom) != Double.POSITIVE_INFINITY) {
-                    double edgeWeigth = calculateEdgeWeigth(currentRoom, nextRoom);
+                    double edgeWeigth = calculateRoomWeight(mission, nextRoom);
                     currentNetwork.addEdge(currentRoom, nextRoom, edgeWeigth);
                 }
             }
@@ -70,26 +76,92 @@ public class AutoSimulation extends Simulation {
     }
 
     /**
-     * Calculates the weight of an edge between two rooms based on the number and power of enemies in the next room.
+     * Calculates the weight of a room based on its conditions.
      *
-     * @param currentRoom the current room.
-     * @param nextRoom    the next room.
-     * @return the calculated edge weight.
+     * The weight is determined by considering the following factors:
+     * - The potential damage from enemies in the room.
+     * - The benefits from uncollected items in the room (e.g., health kits).
+     * - The presence of enemies in surrounding rooms.
+     *
+     * Lower weights indicate more desirable rooms, while higher weights indicate greater
+     * risk or difficulty.
+     *
+     * @param mission the mission context, which provides details such as the player's state.
+     * @param room the room for which the weight is being calculated.
+     * @return the calculated weight of the room.
      */
-    public static double calculateEdgeWeigth(Room currentRoom, Room nextRoom) {
-        double weight = 0;
+    public static double calculateRoomWeight(Mission mission, Room room) {
+        double roomWeight = 0;
 
-        if (nextRoom.hasEnemies()) {
-            for (Enemy enemy : nextRoom.getEnemies()) {
-                if (enemy != null && enemy.isAlive()) {
-                    weight += enemy.getPower();
-                }
+
+        // Check if there are any enemies left in the mission
+        boolean missionHasEnemies = false;
+        for (Enemy enemy : mission.getEnemies()) {
+            if (enemy != null && enemy.isAlive()) {
+                missionHasEnemies = true;
             }
-        } else {
-            weight = 0; //default value
+        }
+        // If all enemies are dead, return a default cost of 1
+        if (!missionHasEnemies) {
+            return 1;
         }
 
-        return weight;
+        // Potential damage from enemies in the room
+        for (Enemy enemy : room.getEnemies()) {
+            if (enemy != null && enemy.isAlive()) {
+                // Reduced weight if the player can kill the enemy without taking damage
+                if (enemy.getLife() <= GameSettings.getPlayerPower()) {
+                    roomWeight += enemy.getPower() * 0.25;
+                } else {
+                    roomWeight += enemy.getPower();
+                }
+            }
+        }
+
+        // Increase weight for rooms with multiple enemies
+        if (room.getEnemies().size() >= 2) {
+            roomWeight += room.getEnemies().size();
+        }
+
+        // Decrease weight based on potential secured points from uncollected items
+        for (Item item : room.getItems()) {
+            if (item != null && !item.isPickedUp()) {
+                if (mission.getPlayer().getLife() <= 50) {
+                    roomWeight -= item.getGivenPoints() * 0.90; // Higher priority for items when health is low
+                } else {
+                    roomWeight -= item.getGivenPoints() * 0.70; // Lower priority when health is sufficient
+                }
+            }
+        }
+
+        // Increase weight based on the number of enemies in surrounding rooms
+        roomWeight += numberOfEnemiesInTheSurrounds(mission, room) * 2;
+
+        return roomWeight;
+    }
+
+    /**
+     * Counts the total number of enemies in rooms surrounding a given room.
+     *
+     * This method checks all adjacent rooms (neighbors) of the specified room and counts
+     * the enemies present in those rooms. This value is used to increase the weight of the
+     * room, as nearby enemies pose an additional risk.
+     *
+     * @param mission the mission context, which provides access to the map and room connections.
+     * @param room the room whose surroundings are being evaluated.
+     * @return the total number of enemies in the surrounding rooms.
+     */
+    public static int numberOfEnemiesInTheSurrounds(Mission mission, Room room) {
+        int enemiesInSurrounds = 0;
+
+        // Iterate through neighboring rooms
+        for (Room neighbour : mission.getMissionMap().getMap().getNeighbours(room)) {
+            if (neighbour != null && neighbour.hasEnemies()) {
+                enemiesInSurrounds += neighbour.getEnemies().size();
+            }
+        }
+
+        return enemiesInSurrounds;
     }
 
     /**
