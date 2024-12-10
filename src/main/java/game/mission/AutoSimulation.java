@@ -11,7 +11,6 @@ import game.items.Item;
 import game.map.Room;
 import game.settings.GameSettings;
 
-import javax.lang.model.type.ArrayType;
 import java.util.Random;
 
 /**
@@ -93,7 +92,6 @@ public class AutoSimulation extends Simulation {
     public static double calculateRoomWeight(Mission mission, Room room) {
         double roomWeight = 0;
 
-
         // Check if there are any enemies left in the mission
         boolean missionHasEnemies = false;
         for (Enemy enemy : mission.getEnemies()) {
@@ -135,7 +133,7 @@ public class AutoSimulation extends Simulation {
         }
 
         // Increase weight based on the number of enemies in surrounding rooms
-        roomWeight += numberOfEnemiesInTheSurrounds(mission, room) * 2;
+        roomWeight += numberOfEnemiesInTheSurrounds(mission, room) * 1.25;
 
         return roomWeight;
     }
@@ -158,6 +156,13 @@ public class AutoSimulation extends Simulation {
         for (Room neighbour : mission.getMissionMap().getMap().getNeighbours(room)) {
             if (neighbour != null && neighbour.hasEnemies()) {
                 enemiesInSurrounds += neighbour.getEnemies().size();
+
+                //Checks if there is enemies in the neighbour of neighbour(risk of random moves)
+                for (Room neighbourOfNeighbour : mission.getMissionMap().getMap().getNeighbours(neighbour)) {
+                    if (neighbourOfNeighbour != null && neighbourOfNeighbour.hasEnemies()) {
+                        enemiesInSurrounds += neighbourOfNeighbour.getEnemies().size();
+                    }
+                }
             }
         }
 

@@ -126,7 +126,6 @@ public abstract class Entity implements IEntity {
     @Override
     public void takeDamage(int damage) {
         if (damage >= 0) {
-
             int newLife = this.health - damage;
             if(newLife > 0) {
                 this.health = newLife;

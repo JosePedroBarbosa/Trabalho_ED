@@ -10,15 +10,19 @@ import java.util.Iterator;
  * @param <T> the type of the vertices in the network
  */
 public class Network<T> extends Graph<T> implements NetworkADT<T> {
-    protected double[][] adjMatrix;
 
     /**
      * Constructs a new empty network with default capacity.
      */
     public Network(){
-        numVertices = 0;
-        this.adjMatrix = new double[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
-        this.vertices = (T[]) (new Object[DEFAULT_CAPACITY]);
+        super();
+    }
+
+    /**
+     * Constructs a new empty network with a given capacity.
+     */
+    public Network(int initialCapacity){
+        super(initialCapacity);
     }
 
     /**
@@ -30,7 +34,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
      */
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
-        super.addEdge(vertex1, vertex2); //add in the graph matrix
         this.addEdge(getIndex(vertex1), getIndex(vertex2), weight);
     }
 
@@ -41,7 +44,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
      * @param index2 the index of the second vertex
      * @param weight the weight of the edge
      */
-    public void addEdge(int index1, int index2, double weight) {
+    private void addEdge(int index1, int index2, double weight) {
         if(indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = weight;
             adjMatrix[index2][index1] = weight;
@@ -71,176 +74,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
             return adjMatrix[index1][index2];
         }
         return Double.POSITIVE_INFINITY;
-    }
-
-    /**
-     * Removes the edge between two vertices.
-     *
-     * @param vertex1 the first vertex
-     * @param vertex2 the second vertex
-     */
-    @Override
-    public void removeEdge(T vertex1, T vertex2) {
-        removeEdge(getIndex(vertex1), getIndex(vertex2));
-    }
-
-    /**
-     * Removes the edge between two vertices given their indices.
-     *
-     * @param index1 the index of the first vertex
-     * @param index2 the index of the second vertex
-     */
-    public void removeEdge(int index1, int index2) {
-        if(indexIsValid(index1) && indexIsValid(index2)) {
-            adjMatrix[index1][index2] = Double.POSITIVE_INFINITY;
-            adjMatrix[index2][index1] = Double.POSITIVE_INFINITY;
-        }
-    }
-
-    /**
-     * Adds a new vertex to the network.
-     * If the network is at max capacity, it will expand.
-     *
-     * @param vertex the vertex to add
-     * @throws IllegalArgumentException if the vertex is null
-     */
-    @Override
-    public void addVertex(T vertex){
-        if (vertex == null) {
-            throw new IllegalArgumentException("The Element Cant Be Null");
-        }
-
-        if (this.numVertices == this.vertices.length) {
-            expandNetworkCapacity();
-        }
-
-        for (int i = 0; i <= numVertices; i++) {
-            adjMatrix[numVertices][i] = Double.POSITIVE_INFINITY;
-            adjMatrix[i][numVertices] = Double.POSITIVE_INFINITY;
-        }
-        super.addVertex(vertex); //add vertex in the graph
-    }
-
-    /**
-     * Expands the capacity of the network by a factor of EXPANSION_FATORIAL.
-     */
-    public void expandNetworkCapacity(){
-        int newCapacity = numVertices * EXPANSION_FATORIAL;
-        double[][] newAdjMatrix = new double[newCapacity][newCapacity];
-        for (int i = 0; i < numVertices; i++) {
-            for(int j = 0; j < numVertices; j++) {
-                newAdjMatrix[i][j] = adjMatrix[i][j];
-            }
-        }
-
-        this.adjMatrix = newAdjMatrix;
-    }
-
-    /**
-     * Returns an iterator for depth-first search (DFS) traversal starting from the given vertex.
-     *
-     * @param startVertex the starting vertex
-     * @return an iterator for the DFS traversal
-     */
-    @Override
-    public Iterator<T> iteratorDFS(T startVertex){
-        return iteratorDFS(getIndex(startVertex));
-    }
-
-    /**
-     * Returns an iterator for depth-first search (DFS) traversal starting from the given vertex index.
-     *
-     * @param startIndex the index of the starting vertex
-     * @return an iterator for the DFS traversal
-     */
-    public Iterator<T> iteratorDFS(int startIndex){
-        Integer x;
-        boolean found;
-        LinkedStack<Integer> traversalStack = new LinkedStack<>();
-        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
-        boolean[] visited = new boolean[numVertices];
-
-        if (!indexIsValid(startIndex)) {
-            return resultList.iterator();
-        }
-
-        for (int i = 0; i < numVertices; i++) {
-            visited[i] = false;
-        }
-
-        traversalStack.push(startIndex);
-        resultList.addToRear(vertices[startIndex]);
-        visited[startIndex] = true;
-
-        while(!traversalStack.isEmpty()){
-            x = traversalStack.peek();
-            found = false;
-
-            /** Find a vertex adjacent to x that has not been visited
-             and push it on the stack */
-            for(int i = 0; i < numVertices && !found; i++){
-                if ((adjMatrix[x][i] < Double.POSITIVE_INFINITY) && !visited[i]) {
-                    traversalStack.push(i);
-                    resultList.addToRear(vertices[i]);
-                    visited[i] = true;
-                    found = true;
-                }
-            }
-            if (!found && !traversalStack.isEmpty()) {
-                traversalStack.pop();
-            }
-        }
-        return resultList.iterator();
-    }
-
-    /**
-     * Returns an iterator for breadth-first search (BFS) traversal starting from the given vertex.
-     *
-     * @param startVertex the starting vertex
-     * @return an iterator for the BFS traversal
-     */
-    @Override
-    public Iterator<T> iteratorBFS(T startVertex) {
-        return iteratorBFS(getIndex(startVertex));
-    }
-
-    /**
-     * Returns an iterator for breadth-first search (BFS) traversal starting from the given vertex index.
-     *
-     * @param startIndex the index of the starting vertex
-     * @return an iterator for the BFS traversal
-     */
-    public Iterator<T> iteratorBFS(int startIndex) {
-        Integer x;
-        LinkedQueue<Integer> traversalQueue = new LinkedQueue<>();
-        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
-
-        if (!indexIsValid(startIndex)) {
-            return resultList.iterator();
-        }
-
-        boolean[] visited = new boolean[numVertices];
-        for (int i = 0; i < numVertices; i++) {
-            visited[i] = false;
-        }
-
-        traversalQueue.enqueue(startIndex);
-        visited[startIndex] = true;
-
-        while (!traversalQueue.isEmpty()) {
-            x = traversalQueue.dequeue();
-            resultList.addToRear(vertices[x]);
-
-            //Find all vertices adjacent to x that have not been visited and
-            //queue them up
-            for (int i = 0; i < numVertices; i++) {
-                if ((adjMatrix[x][i] < Double.POSITIVE_INFINITY) && !visited[i]) {
-                    traversalQueue.enqueue(i);
-                    visited[i] = true;
-                }
-            }
-        }
-        return resultList.iterator();
     }
 
     /**
@@ -289,7 +122,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         ArrayUnorderedList<Integer> resultList = new ArrayUnorderedList<>();
         LinkedStack<Integer> stack = new LinkedStack<>();
 
-        int[] pathIndex = new int[numVertices];
         double[] pathWeight = new double[numVertices];
         for (int i = 0; i < numVertices; i++) {
             pathWeight[i] = Double.POSITIVE_INFINITY;
@@ -307,7 +139,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         pathWeight[startIndex] = 0;
         predecessor[startIndex] = -1;
         visited[startIndex] = true;
-        weight = 0;
 
         //Update the pathWeight for each vertex except the startVertex. Notice
         //that all vertices not adjacent to the startVertex will have a
@@ -379,6 +210,75 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
         return -1;
     }
+
+
+    /**
+     * Finds the edge with the specified weight, where one vertex has been visited and the other has not.
+     *
+     * @param weight The weight of the edge to be found.
+     * @param visited A boolean array indicating whether each vertex has been visited.
+     * @return An array with the indices of the vertices connected by the edge with the specified weight.
+     */
+    protected int[] getEdgeWithWeightOf(double weight, boolean[] visited) {
+        int[] edge = new int[2];
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                if ((adjMatrix[i][j] == weight) && (visited[i] ^ visited[j])) {
+                    edge[0] = i;
+                    edge[1] = j;
+                    return edge;
+                }
+            }
+        }
+
+        edge[0] = -1;
+        edge[1] = -1;
+        return edge;
+    }
+
+    /**
+     * Calculates the weight of the shortest path between two vertices by their values.
+     *
+     * @param vertex1 The starting vertex.
+     * @param vertex2 The destination vertex.
+     * @return The weight of the shortest path, or Double.POSITIVE_INFINITY if no path exists.
+     */
+    @Override
+    public double shortestPathWeight(T vertex1, T vertex2) {
+        return shortestPathWeight(getIndex(vertex1), getIndex(vertex2));
+    }
+
+    /**
+     * Calculates the weight of the shortest path between two vertices specified by their indices.
+     *
+     * @param startIndex The index of the starting vertex.
+     * @param targetIndex The index of the destination vertex.
+     * @return The total weight of the shortest path between the vertices, or Double.POSITIVE_INFINITY if no path exists.
+     */
+    public double shortestPathWeight(int startIndex, int targetIndex) {
+        double result = 0;
+        if(!indexIsValid(startIndex) || !indexIsValid(targetIndex)){
+            return Double.POSITIVE_INFINITY;
+        }
+
+        int index1, index2;
+        Iterator<Integer> it = iteratorShortestPathIndices(startIndex, targetIndex);
+
+        if(it.hasNext()){
+            index1 = it.next();
+        }else {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        while(it.hasNext()){
+            index2 = it.next();
+            result += adjMatrix[index1][index2];
+            index1 = index2;
+        }
+
+        return result;
+    }
+
 
     /**
      * Returns the Minimum Spanning Tree (MST) of the graph.
@@ -464,72 +364,4 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
         return resultGraph;
     }
-
-    /**
-     * Finds the edge with the specified weight, where one vertex has been visited and the other has not.
-     *
-     * @param weight The weight of the edge to be found.
-     * @param visited A boolean array indicating whether each vertex has been visited.
-     * @return An array with the indices of the vertices connected by the edge with the specified weight.
-     */
-    protected int[] getEdgeWithWeightOf(double weight, boolean[] visited) {
-        int[] edge = new int[2];
-        for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j < numVertices; j++) {
-                if ((adjMatrix[i][j] == weight) && (visited[i] ^ visited[j])) {
-                    edge[0] = i;
-                    edge[1] = j;
-                    return edge;
-                }
-            }
-        }
-
-        edge[0] = -1;
-        edge[1] = -1;
-        return edge;
-    }
-
-    /**
-     * Calculates the weight of the shortest path between two vertices by their values.
-     *
-     * @param vertex1 The starting vertex.
-     * @param vertex2 The destination vertex.
-     * @return The weight of the shortest path, or Double.POSITIVE_INFINITY if no path exists.
-     */
-    @Override
-    public double shortestPathWeight(T vertex1, T vertex2) {
-        return shortestPathWeight(getIndex(vertex1), getIndex(vertex2));
-    }
-
-    /**
-     * Calculates the weight of the shortest path between two vertices specified by their indices.
-     *
-     * @param startIndex The index of the starting vertex.
-     * @param targetIndex The index of the destination vertex.
-     * @return The total weight of the shortest path between the vertices, or Double.POSITIVE_INFINITY if no path exists.
-     */
-    public double shortestPathWeight(int startIndex, int targetIndex) {
-        double result = 0;
-        if(!indexIsValid(startIndex) || !indexIsValid(targetIndex)){
-            return Double.POSITIVE_INFINITY;
-        }
-
-        int index1, index2;
-        Iterator<Integer> it = iteratorShortestPathIndices(startIndex, targetIndex);
-
-        if(it.hasNext()){
-            index1 = it.next();
-        }else {
-            return Double.POSITIVE_INFINITY;
-        }
-
-        while(it.hasNext()){
-            index2 = it.next();
-            result += adjMatrix[index1][index2];
-            index1 = index2;
-        }
-
-        return result;
-    }
-
 }
