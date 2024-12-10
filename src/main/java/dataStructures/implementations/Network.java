@@ -20,6 +20,8 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
 
     /**
      * Constructs a new empty network with a given capacity.
+     *
+     * @param initialCapacity the initial capacity of the network
      */
     public Network(int initialCapacity){
         super(initialCapacity);

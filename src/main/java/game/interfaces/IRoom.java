@@ -6,6 +6,9 @@ import game.character.Entity;
 import game.character.Player;
 import game.items.Item;
 
+/**
+ * Represents the interface for a room in the game.
+ */
 public interface IRoom {
 
     /**

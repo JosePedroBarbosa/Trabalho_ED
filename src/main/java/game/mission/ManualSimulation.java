@@ -186,6 +186,7 @@ public class ManualSimulation extends Simulation{
      *   while other enemies in the building move randomly.
      *
      * @param mission the current mission containing the player and enemies.
+     * @param scanner the scanner used for user input during the scenario
      */
     public static void handleScenario1(Mission mission, Scanner scanner){
         System.out.println("The player encountered enemies in the room. Confrontation Started");
@@ -198,6 +199,7 @@ public class ManualSimulation extends Simulation{
      * - All Enemies Move Randomly
      *
      * @param mission the current mission containing the player and enemies.
+     * @param scanner the scanner used for user input during the scenario
      */
     public static void handleScenario2(Mission mission, Scanner scanner){
         enemiesRandomMove(mission, mission.getEnemies(), scanner);
@@ -210,6 +212,7 @@ public class ManualSimulation extends Simulation{
      *
      * @param mission the current mission containing the player and enemies.
      * @param enemy the enemy that attacks the player
+     * @param scanner the scanner used for user input during the scenario
      */
     public static void handleScenario3(Mission mission, Enemy enemy, Scanner scanner){
         System.out.println("The enemy encountered the player in the room. Confrontation Started");
@@ -224,6 +227,7 @@ public class ManualSimulation extends Simulation{
      * - If the Player does not have items to use the turn is canceled
      *
      * @param mission the current mission containing the player and enemies.
+     * @param scanner the scanner used for user input during the scenario
      */
     public static void handleScenario4(Mission mission, Scanner scanner) {
         try {
@@ -242,6 +246,7 @@ public class ManualSimulation extends Simulation{
      * - When the confrontation ends if the player remain alive he secure the target
      *
      * @param mission the current mission containing the player and enemies.
+     * @param scanner the scanner used for user input during the scenario
      */
     private static void handleScenario5(Mission mission, Scanner scanner) {
         System.out.println("You found the target but there are enemies in the room. Confrontation Started.");

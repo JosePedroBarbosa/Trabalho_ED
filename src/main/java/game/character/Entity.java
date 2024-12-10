@@ -9,11 +9,34 @@ import game.interfaces.IEntity;
  * An entity has a unique id, a name, health, power, and a current room.
  */
 public abstract class Entity implements IEntity {
+    /**
+     * The static counter to generate unique IDs for each entity.
+     */
     private static int nextId = 0;
+
+    /**
+     * The unique identifier of this entity.
+     */
     private final int id;
+
+    /**
+     * The name of the entity.
+     */
     private String name;
+
+    /**
+     * The health points of the entity.
+     */
     protected int health;
+
+    /**
+     * The power level of the entity.
+     */
     protected final int power;
+
+    /**
+     * The current room where the entity is located.
+     */
     protected Room currentRoom;
 
     /**

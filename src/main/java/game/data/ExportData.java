@@ -25,7 +25,6 @@ public class ExportData {
      * The settings include maximum backpack items, maximum enemy moves,
      * player power, and initial character health.
      *
-     * @throws IOException if an error occurs while writing to the file
      */
     public static void saveGameSettingsToJson() {
 
@@ -51,7 +50,6 @@ public class ExportData {
      * @param mission the mission being simulated
      * @param rooms the list of rooms (route) taken during the simulation
      * @param success whether the simulation was successful or not
-     * @throws IOException if an error occurs while writing to the file
      */
     public static void saveManualSimulationToJson(Mission mission, ArrayUnorderedList<Room> rooms, boolean success) {
         JSONArray simulationsArray;

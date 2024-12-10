@@ -1,12 +1,15 @@
 package game.mission;
 
 import dataStructures.implementations.ArrayUnorderedList;
-import dataStructures.implementations.Network;
 import game.character.Enemy;
 import game.character.Player;
 import game.items.Item;
 import game.map.Room;
 
+/**
+ * Provides utility methods for simulating gameplay mechanics such as moving players and enemies
+ * between rooms, and filtering enemies based on their locations relative to the player.
+ */
 public class Simulation {
 
     /**

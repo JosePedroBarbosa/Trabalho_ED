@@ -11,11 +11,29 @@ import java.util.Iterator;
  * @param <T> the type of the vertices in the graph
  */
 public class Graph<T> implements GraphADT<T> {
+    /**
+     * The default initial capacity of the graph.
+     */
     protected static int DEFAULT_CAPACITY = 10;
+
+    /**
+     * The expansion factor used to resize the graph when needed.
+     */
     protected static int EXPANSION_FATORIAL = 2;
 
+    /**
+     * The array of vertices in the graph.
+     */
     protected T[] vertices;
+
+    /**
+     * The adjacency matrix representing edges and weights between vertices.
+     */
     protected double[][] adjMatrix;
+
+    /**
+     * The current number of vertices in the graph.
+     */
     protected int numVertices;
 
     /**

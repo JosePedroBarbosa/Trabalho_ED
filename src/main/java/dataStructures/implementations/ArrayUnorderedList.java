@@ -19,6 +19,8 @@ public class ArrayUnorderedList<T> extends ArrayList<T> implements UnorderedList
 
     /**
      * Default constructor that initializes the list with an initial capacity.
+     *
+     * @param initialCapacity the initial capacity of the list
      */
     public ArrayUnorderedList(int initialCapacity) {
         super(initialCapacity);

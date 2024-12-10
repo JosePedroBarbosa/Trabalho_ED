@@ -8,6 +8,9 @@ import game.map.Map;
 import game.map.Room;
 import game.map.Target;
 
+/**
+ * Represents the interface for a mission in the game.
+ */
 public interface IMission {
 
     /**

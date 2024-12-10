@@ -18,7 +18,6 @@ import java.util.Random;
  * It handles player decisions, enemy movements, and interactions.
  */
 public class AutoSimulation extends Simulation {
-
     private static Network<Room> currentNetwork;
 
     /**
