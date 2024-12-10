@@ -13,9 +13,25 @@ import java.util.ConcurrentModificationException;
  * @param <T> the type of elements in this list
  */
 public class ArrayList<T> implements ListADT<T>, Iterable<T> {
+    /**
+     * The default initial capacity of the list.
+     */
     private final static int DEFAULT_CAPACITY = 100;
+
+    /**
+     * The array used to store the elements of the list.
+     */
     protected T[] list;
-    protected int size, modCount;
+
+    /**
+     * The current number of elements in the list.
+     */
+    protected int size;
+
+    /**
+     * The modification count, used to track changes to the list.
+     */
+    protected int modCount;
 
     /**
      * Default constructor that initializes the list with a default capacity of 100.

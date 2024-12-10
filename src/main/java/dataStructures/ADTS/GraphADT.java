@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 /**
  * * GraphADT defines the interface to a graph data structure. *
+ *
+ * @param <T> the type of elements the graph will contain
  */
 public interface GraphADT<T> {
     /**

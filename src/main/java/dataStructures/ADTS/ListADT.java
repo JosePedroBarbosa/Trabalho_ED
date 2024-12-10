@@ -27,6 +27,7 @@ public interface ListADT<T> extends Iterable<T> {
      * Removes and returns the specified element from this list.
      *
      * @param element the element to be removed from the list
+     * @return the removed element
      */
     public T remove (T element);
 

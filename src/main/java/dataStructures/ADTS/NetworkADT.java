@@ -3,6 +3,7 @@ package dataStructures.ADTS;
 /**
  * NetworkADT defines the interface to a network.
  *
+ * @param <T> the type of elements the network will contain
  */
 public interface NetworkADT<T> extends GraphADT<T>{
     /**
