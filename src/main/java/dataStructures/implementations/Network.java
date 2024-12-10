@@ -84,7 +84,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
      * @return an ArrayUnorderedList of vertices representing the shortest path
      */
     public ArrayUnorderedList<T> shortestPath(T startVertex, T endVertex) {
-        Iterator<Integer> it = iteratorShortestPathIndices(getIndex(startVertex), getIndex(endVertex));
+        Iterator<Integer> it = dijkstra(getIndex(startVertex), getIndex(endVertex));
         ArrayUnorderedList<T> path = new ArrayUnorderedList<>();
 
         while (it.hasNext()) {
@@ -92,148 +92,6 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
 
         return path;
-    }
-
-    /**
-     * Returns an iterator for the shortest path between the specified vertices.
-     *
-     * @param startVertex The starting vertex.
-     * @param endVertex The destination vertex.
-     * @return An iterator for the shortest path between the provided vertices.
-     */
-    @Override
-    public Iterator<T> iteratorShortestPath(T startVertex, T endVertex) {
-        return shortestPath(startVertex, endVertex).iterator();
-    }
-
-    /**
-     * The shortest path between two vertices given their indices, returning
-     * an iterator with the indices of the vertices in the shortest path.
-     *
-     * @param startIndex The index of the starting vertex.
-     * @param targetIndex The index of the destination vertex.
-     * @return An iterator containing the indices of the vertices in the shortest path.
-     */
-    protected Iterator<Integer> iteratorShortestPathIndices(int startIndex, int targetIndex) {
-        int index;
-        double weight;
-        int[] predecessor = new int[numVertices];
-        LinkedHeap<Double> traversalMinHeap = new LinkedHeap<>();
-        ArrayUnorderedList<Integer> resultList = new ArrayUnorderedList<>();
-        LinkedStack<Integer> stack = new LinkedStack<>();
-
-        double[] pathWeight = new double[numVertices];
-        for (int i = 0; i < numVertices; i++) {
-            pathWeight[i] = Double.POSITIVE_INFINITY;
-        }
-
-        boolean[] visited = new boolean[numVertices];
-        for (int i = 0; i < numVertices; i++) {
-            visited[i] = false;
-        }
-
-        if (!indexIsValid(startIndex) || !indexIsValid(targetIndex) || (startIndex == targetIndex) || isEmpty()) {
-            return resultList.iterator();
-        }
-
-        pathWeight[startIndex] = 0;
-        predecessor[startIndex] = -1;
-        visited[startIndex] = true;
-
-        //Update the pathWeight for each vertex except the startVertex. Notice
-        //that all vertices not adjacent to the startVertex will have a
-        //pathWeight of infinity for now
-        for (int i = 0; i < numVertices; i++) {
-            if (!visited[i]) {
-                pathWeight[i] = pathWeight[startIndex] + adjMatrix[startIndex][i];
-                predecessor[i] = startIndex;
-                traversalMinHeap.addElement(pathWeight[i]);
-            }
-        }
-
-        do {
-            weight = traversalMinHeap.removeMin();
-            traversalMinHeap.removeAllElements();
-            if (weight == Double.POSITIVE_INFINITY){
-                return resultList.iterator();
-            } else {
-                index = getIndexOfAdjVertexWithWeightOf(visited, pathWeight, weight);
-                visited[index] = true;
-            }
-
-            //Update the pathWeight for each vertex that has not been
-            //visited and is adjacent to the last vertex that was visited.
-            //Also, add each unvisited vertex to the heap
-            for (int i = 0; i < numVertices; i++) {
-                if (!visited[i]) {
-                    if ((adjMatrix[index][i] < Double.POSITIVE_INFINITY) && (pathWeight[index] + adjMatrix[index][i]) < pathWeight[i]) {
-                        pathWeight[i] = pathWeight[index] + adjMatrix[index][i];
-                        predecessor[i] = index;
-                    }
-                    traversalMinHeap.addElement(pathWeight[i]);
-                }
-            }
-        } while (!traversalMinHeap.isEmpty() && !visited[targetIndex]);
-
-        index = targetIndex;
-        stack.push(index);
-        do {
-            index = predecessor[index];
-            stack.push(index);
-        } while (index != startIndex);
-
-        while (!stack.isEmpty()) {
-            resultList.addToRear((stack.pop()));
-        }
-
-        return resultList.iterator();
-    }
-
-    /**
-     * Finds the index of an adjacent vertex that has the specified weight,
-     * and has been visited.
-     *
-     * @param visited A boolean array indicating whether each vertex has been visited.
-     * @param pathWeight An array containing the path weights for each vertex.
-     * @param weight The weight to be found.
-     * @return The index of the adjacent vertex with the specified weight, or -1 if none is found.
-     */
-    protected int getIndexOfAdjVertexWithWeightOf(boolean[] visited, double[] pathWeight, double weight) {
-        for(int i = 0; i < numVertices; i++){
-            if((pathWeight[i] == weight) && !visited[i]){
-                for(int j = 0; j < numVertices; j++){
-                    if((adjMatrix[i][j] < Double.POSITIVE_INFINITY) && visited[j]){
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
-
-    /**
-     * Finds the edge with the specified weight, where one vertex has been visited and the other has not.
-     *
-     * @param weight The weight of the edge to be found.
-     * @param visited A boolean array indicating whether each vertex has been visited.
-     * @return An array with the indices of the vertices connected by the edge with the specified weight.
-     */
-    protected int[] getEdgeWithWeightOf(double weight, boolean[] visited) {
-        int[] edge = new int[2];
-        for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j < numVertices; j++) {
-                if ((adjMatrix[i][j] == weight) && (visited[i] ^ visited[j])) {
-                    edge[0] = i;
-                    edge[1] = j;
-                    return edge;
-                }
-            }
-        }
-
-        edge[0] = -1;
-        edge[1] = -1;
-        return edge;
     }
 
     /**
@@ -262,7 +120,7 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         }
 
         int index1, index2;
-        Iterator<Integer> it = iteratorShortestPathIndices(startIndex, targetIndex);
+        Iterator<Integer> it = dijkstra(startIndex, targetIndex);
 
         if(it.hasNext()){
             index1 = it.next();
@@ -279,89 +137,88 @@ public class Network<T> extends Graph<T> implements NetworkADT<T> {
         return result;
     }
 
+    /**
+     * Finds the vertex with the smallest distance that has not yet been processed.
+     *
+     * @param distance Array containing the current shortest distances from the source to each vertex.
+     * @param spSet Boolean array indicating whether each vertex has been processed.
+     * @return The index of the vertex with the smallest distance.
+     */
+    int minimumDistance(double[] distance, boolean[] spSet) {
+        // Initialize the minimum value
+        double m = Double.POSITIVE_INFINITY; // The smallest distance starts as infinite
+        int m_index = -1; // Index of the vertex with the smallest distance
+
+        // Loop through all vertices
+        for (int i = 0; i < numVertices; i++) {
+            // If the vertex is not yet processed and its distance is smaller or equal to the current minimum
+            if (!spSet[i] && distance[i] <= m) {
+                m = distance[i]; // Update the minimum value
+                m_index = i;     // Update the index of the vertex with the smallest distance
+            }
+        }
+
+        return m_index; // Return the index of the vertex with the smallest distance
+    }
 
     /**
-     * Returns the Minimum Spanning Tree (MST) of the graph.
-     * A new graph representing the MST is created and returned.
+     * Implements Dijkstra's shortest path algorithm for a graph represented as an adjacency matrix.
      *
-     * @return A new graph representing the Minimum Spanning Tree (MST) of the graph.
+     * This method was inspired by an implementation of Dijkstra and can be found at the following link:
+     * "https://www.javatpoint.com/dijkstra-algorithm-java". We have modified the algorithm to return an Integer Iterator
+     * of the vertex positions and adapted the variables to fit our network implementation.
+     *
+     * @param s The source vertex from which the shortest path is calculated.
+     * @param t The target vertex to which the shortest path is calculated.
+     * @return An iterator over the vertices in the shortest path from `s` to `t`.
      */
-    public Network<T> mstNetwork(){
-        int x, y;
-        int index;
-        double weight;
-        int[] edge = new int[2];
-        LinkedHeap<Double> minHeap = new LinkedHeap<Double>();
-        Network<T> resultGraph = new Network<T>();
+    private Iterator<Integer> dijkstra(int s, int t) {
+        double[] distance = new double[numVertices]; // Array to store the shortest distances from source `s` to all vertices
 
-        if(isEmpty() || !isConnected()){
-            return resultGraph;
-        }
+        // spSet[j] will be true if vertex `j` is included in the shortest
+        // path tree or if the shortest distance from source `s` to `j` is finalized
+        boolean[] spSet = new boolean[numVertices]; // Array to mark processed vertices
 
-        resultGraph.adjMatrix = new double[numVertices][numVertices];
+        // Array to store predecessors of each vertex in the shortest path
+        int[] predecessor = new int[numVertices];
+
+        // Initialize distances, processed vertices set, and predecessors
         for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j <  numVertices; j++) {
-                resultGraph.adjMatrix[i][j] = Double.POSITIVE_INFINITY;
-            }
-            resultGraph.vertices = (T[]) (new Object[numVertices]);
+            distance[i] = Double.POSITIVE_INFINITY; // All distances start as infinite
+            spSet[i] = false;                       // No vertex has been processed yet
+            predecessor[i] = -1;                    // No predecessor at the start
         }
 
-        boolean[] visited = new boolean[numVertices];
-        for(int i = 0; i < numVertices; i++){
-            visited[i] = false;
-        }
-        edge[0] = 0;
-        resultGraph.vertices[0] = this.vertices[0];
-        resultGraph.numVertices++;
-        visited[0] = true;
+        distance[s] = 0; // Distance to the source vertex is 0
 
-        /**
-         * Add all edges, which are adjacent to the starting vertex, to the heap
-         */
-        for(int i = 0; i < numVertices; i++){
-            minHeap.addElement(adjMatrix[0][i]);
-        }
+        // Main loop to find the shortest path for all vertices
+        for (int cnt = 0; cnt < numVertices - 1; cnt++) {
+            // Find the vertex with the smallest distance that has not been processed yet
+            int ux = minimumDistance(distance, spSet);
+            spSet[ux] = true; // Mark this vertex as processed
 
-        while((resultGraph.size() < this.size()) && !minHeap.isEmpty()){
-            /**
-             * Get the edge with the smallest weight that has exactly one vertex
-             * already in the resultGraph
-             */
-            do {
-                weight = minHeap.removeMin();
-                edge = getEdgeWithWeightOf(weight, visited);
-            } while(!indexIsValid(edge[0]) || !indexIsValid(edge[1]));
-        }
-
-        x = edge[0];
-        y = edge[1];
-        if (!visited[x]) {
-            index = x;
-        } else {
-            index = y;
-        }
-
-        /**
-         * Add the new edge and vertex to the resultGraph
-         */
-        resultGraph.vertices[index] = this.vertices[index];
-        visited[index] = true;
-        resultGraph.numVertices++;
-
-        resultGraph.adjMatrix[x][y] = this.adjMatrix[x][y];
-        resultGraph.adjMatrix[y][x] = this.adjMatrix[y][x];
-
-        /**
-         * Add all edges, that are adjacent to the newly added vertex, to
-         * the heap
-         */
-        for (int i = 0; i < numVertices; i++) {
-            if (!visited[i] && (this.adjMatrix[i][index] < Double.POSITIVE_INFINITY)) {
-                edge[0] = index;
-                edge[1] = i;
-                minHeap.addElement(adjMatrix[index][i]);
+            // Update distances and predecessors for neighbors of the selected vertex
+            for (int vx = 0; vx < numVertices; vx++) {
+                // Check if the vertex `vx` can be updated:
+                // - Not yet processed
+                // - There is an edge between `ux` and `vx`
+                // - The distance to `ux` is not infinite
+                // - The new distance through `ux` is smaller than the current distance to `vx`
+                if (!spSet[vx] && adjMatrix[ux][vx] != Double.POSITIVE_INFINITY && distance[ux] != Double.POSITIVE_INFINITY && distance[ux] + adjMatrix[ux][vx] < distance[vx]) {
+                    distance[vx] = distance[ux] + adjMatrix[ux][vx]; // Update the distance
+                    predecessor[vx] = ux; // Update the predecessor of `vx`
+                }
             }
         }
-        return resultGraph;
+
+        // Reconstruct the shortest path from the destination `t` back to the source `s`
+        ArrayUnorderedList<Integer> path = new ArrayUnorderedList<>(); // List to store the path
+        for (int at = t; at != -1; at = predecessor[at]) {
+            path.addToFront(at); // Add each vertex to the front of the path
+        }
+
+        return path.iterator(); // Return the path as an iterator
     }
+
+
 }
