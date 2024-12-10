@@ -6,6 +6,8 @@ import game.exceptions.FullBackPackException;
 import game.settings.GameSettings;
 import game.interfaces.IBackpack;
 
+import java.util.EmptyStackException;
+
 /**
  * Represents a backpack that holds items for a player.
  * The backpack has a limited capacity defined by the game settings
@@ -65,6 +67,15 @@ public class Backpack implements IBackpack {
     @Override
     public int getBackpackSize(){
         return inventory.size();
+    }
+
+    /**
+     * Returns the item on the top of the backpack
+     * @return the item in the top
+     */
+    @Override
+    public Item getItemTop() {
+        return inventory.peek();
     }
 
 }

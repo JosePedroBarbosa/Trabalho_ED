@@ -10,6 +10,7 @@ import game.exceptions.EmptyBackPackException;
 import game.map.Room;
 import game.settings.GameSettings;
 
+import javax.lang.model.type.ArrayType;
 import java.util.Random;
 
 /**
@@ -26,7 +27,7 @@ public class AutoSimulation extends Simulation {
      *
      * @param mission the mission to be simulated.
      */
-    public static void autoSimulation(Mission mission){
+    public static void autoSimulation(Mission mission) {
         ImportData importer = new ImportData();
         importer.importCurrentMissionData();
 
@@ -34,11 +35,11 @@ public class AutoSimulation extends Simulation {
 
         boolean gameOver = false;
 
-        while(!gameOver){
+        while (!gameOver) {
             updateCurrentNetwork(mission);
             gameOver = playerTurn(mission);
 
-            if(!mission.getPlayer().isAlive()){
+            if (!mission.getPlayer().isAlive()) {
                 System.out.println("Mission Failed, The Player Died");
                 gameOver = true;
             }
@@ -52,15 +53,15 @@ public class AutoSimulation extends Simulation {
      *
      * @param mission the mission.
      */
-    private static void updateCurrentNetwork(Mission mission){
+    private static void updateCurrentNetwork(Mission mission) {
         ArrayUnorderedList<Room> missionRooms = currentNetwork.getVertices();
 
-        for(int i = 1; i < missionRooms.size(); i++){
+        for (int i = 1; i < missionRooms.size(); i++) {
             Room currentRoom = missionRooms.getByIndex(i - 1);
-            for(int j = 0; j < missionRooms.size(); j++){
+            for (int j = 0; j < missionRooms.size(); j++) {
                 Room nextRoom = missionRooms.getByIndex(j);
                 //If has connection to the room
-                if(currentNetwork.getEdgeWeight(currentRoom, nextRoom) != Double.POSITIVE_INFINITY){
+                if (currentNetwork.getEdgeWeight(currentRoom, nextRoom) != Double.POSITIVE_INFINITY) {
                     double edgeWeigth = calculateEdgeWeigth(currentRoom, nextRoom);
                     currentNetwork.addEdge(currentRoom, nextRoom, edgeWeigth);
                 }
@@ -75,16 +76,16 @@ public class AutoSimulation extends Simulation {
      * @param nextRoom    the next room.
      * @return the calculated edge weight.
      */
-    public static double calculateEdgeWeigth(Room currentRoom, Room nextRoom){
+    public static double calculateEdgeWeigth(Room currentRoom, Room nextRoom) {
         double weight = 0;
 
-        if(nextRoom.hasEnemies()){
-            for(Enemy enemy : nextRoom.getEnemies()){
-                if(enemy != null && enemy.isAlive()){
+        if (nextRoom.hasEnemies()) {
+            for (Enemy enemy : nextRoom.getEnemies()) {
+                if (enemy != null && enemy.isAlive()) {
                     weight += enemy.getPower();
                 }
             }
-        }else {
+        } else {
             weight = 0; //default value
         }
 
@@ -97,15 +98,15 @@ public class AutoSimulation extends Simulation {
      * @param mission the current mission.
      * @return true if the game is over, false otherwise.
      */
-    private static boolean playerTurn(Mission mission){
+    private static boolean playerTurn(Mission mission) {
         int bestChoice = getBestPlayerAction(mission);
-        switch(bestChoice) {
+        switch (bestChoice) {
             case 1:
                 Room currentRoom = mission.getPlayer().getCurrentRoom();
                 Room nextRoom;
-                if(currentRoom == null){
+                if (currentRoom == null) {
                     nextRoom = getBestRoomToMove(mission);
-                }else {
+                } else {
                     nextRoom = getBestRoomToMove(mission);
                 }
                 movePlayerToRoom(mission, nextRoom);
@@ -116,10 +117,10 @@ public class AutoSimulation extends Simulation {
                     } else {
                         handleScenario6(mission);
                     }
-                }else{
+                } else {
                     if (!mission.getPlayer().getCurrentRoom().getEnemies().isEmpty()) {
                         handleScenario1(mission);
-                    }else{
+                    } else {
                         handleScenario2(mission);
                     }
                 }
@@ -151,14 +152,14 @@ public class AutoSimulation extends Simulation {
      * 1 - Move to a new room.
      * 2 - Use a health kit.
      */
-    public static int getBestPlayerAction(Mission mission){
+    public static int getBestPlayerAction(Mission mission) {
         Player player = mission.getPlayer();
         //If the player has the target and is near to an entrance/exit he should leave
-        if(mission.getTarget().isPickedUp() && player.getCurrentRoom().isEntranceAndExit()){
+        if (mission.getTarget().isPickedUp() && player.getCurrentRoom().isEntranceAndExit()) {
             return 0;
         }
         //If the player has low life he should use a kit
-        if(player.getLife() < 50 && player.getBackpack().getBackpackSize() > 0){
+        if (player.getLife() < 50 && player.getBackpack().getBackpackSize() > 0) {
             return 2;
         }
 
@@ -170,11 +171,11 @@ public class AutoSimulation extends Simulation {
      * Handles Scenario 1: The player enters a room with enemies and initiates a confrontation.
      * - The player attacks all enemies in the room, dealing damage simultaneously.
      * - If enemies remain alive, they counter-attack the player and remain in the room,
-     *   while other enemies in the building move randomly.
+     * while other enemies in the building move randomly.
      *
      * @param mission the current mission containing the player and enemies.
      */
-    public static void handleScenario1(Mission mission){
+    public static void handleScenario1(Mission mission) {
         System.out.println("The player encountered enemies in the room. Confrontation Started");
         confrontation(mission.getPlayer());
         enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission));
@@ -186,7 +187,7 @@ public class AutoSimulation extends Simulation {
      *
      * @param mission the current mission containing the player and enemies.
      */
-    public static void handleScenario2(Mission mission){
+    public static void handleScenario2(Mission mission) {
         enemiesRandomMove(mission, mission.getEnemies());
     }
 
@@ -196,9 +197,9 @@ public class AutoSimulation extends Simulation {
      * - If the player remain alive, they counter-attack the enemy
      *
      * @param mission the current mission containing the player and enemies.
-     * @param enemy the enemy that attacks the player
+     * @param enemy   the enemy that attacks the player
      */
-    public static void handleScenario3(Mission mission, Enemy enemy){
+    public static void handleScenario3(Mission mission, Enemy enemy) {
         System.out.println("The enemy encountered the player in the room. Confrontation Started");
         confrontation(enemy);
         enemiesRandomMove(mission, filterEnemiesNotInPlayerRoom(mission));
@@ -225,7 +226,7 @@ public class AutoSimulation extends Simulation {
      * Handles Scenario 5: The player enters a room with the target but found enemies in the room and initiates a confrontation.
      * - The player attacks all enemies in the room, dealing damage simultaneously.
      * - If enemies remain alive, they counter-attack the player and remain in the room,
-     *   while other enemies in the building move randomly.
+     * while other enemies in the building move randomly.
      * - When the confrontation ends if the player remain alive he secure the target
      *
      * @param mission the current mission containing the player and enemies.
@@ -257,7 +258,7 @@ public class AutoSimulation extends Simulation {
         if (mission.getPlayer().getCurrentRoom().equals(mission.getTarget().getCurrentRoom())) {
             mission.getTarget().setPickedUp(true);
             System.out.println("Target Secured.");
-        }else{
+        } else {
             System.out.println("The Target Are Not In The Room");
         }
     }
@@ -269,17 +270,17 @@ public class AutoSimulation extends Simulation {
      * @param mission the current mission containing the player and rooms.
      * @return the next room the player should move to.
      */
-    public static Room getBestRoomToMove(Mission mission){
+    public static Room getBestRoomToMove(Mission mission) {
         ArrayUnorderedList<Room> bestPath;
 
         //If the player is outside the building
-        if(mission.getPlayer().getCurrentRoom() == null){
+        if (mission.getPlayer().getCurrentRoom() == null) {
             return getBestEntranceToMove(mission);
         }
         //If the player has secured the target he should go to an exit
-        if(mission.getTarget().isPickedUp()){
+        if (mission.getTarget().isPickedUp()) {
             bestPath = getBestPathToExit(mission);
-        }else{ //Otherwise he goes to the target
+        } else { //Otherwise he goes to the target
             bestPath = getBestPathToTarget(mission);
         }
 
@@ -323,7 +324,7 @@ public class AutoSimulation extends Simulation {
     /**
      * Finds the best room from a list of rooms based on the shortest path to a target room.
      *
-     * @param rooms the list of candidate rooms.
+     * @param rooms  the list of candidate rooms.
      * @param target the target room to evaluate against.
      * @return the best room with the shortest path to the target.
      */
@@ -371,12 +372,12 @@ public class AutoSimulation extends Simulation {
      * @param mission the current mission containing the enemies and rooms.
      * @param enemies the list of enemies to move.
      */
-    public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies){
+    public static void enemiesRandomMove(Mission mission, ArrayUnorderedList<Enemy> enemies) {
         Random rand = new Random();
         int maxEnemyMoves = GameSettings.getMaxEnemyMoves();
 
         for (Enemy enemy : enemies) {
-            if(enemy != null && enemy.isAlive()){
+            if (enemy != null && enemy.isAlive()) {
                 Room currentRoom = enemy.getCurrentRoom();
                 ArrayUnorderedList<Room> neighbours = mission.getMissionMap().getMap().getNeighbours(currentRoom);
 
@@ -392,7 +393,7 @@ public class AutoSimulation extends Simulation {
                     moveEnemyToRoom(mission, enemy, nextRoom);
 
                     //if the nextRoom have the Player the enemy has priority to attack
-                    if(nextRoom.hasPlayer()){
+                    if (nextRoom.hasPlayer()) {
                         System.out.println("Enemy " + enemy.getName() + " entered the player's room!");
                         handleScenario3(mission, enemy);
                         break;
@@ -406,6 +407,7 @@ public class AutoSimulation extends Simulation {
 
     /**
      * Handles a confrontation based on the priority entity.
+     *
      * @param priorityEntity the entity with priority (Player or Enemy).
      */
     private static void confrontation(Entity priorityEntity) {
@@ -415,7 +417,7 @@ public class AutoSimulation extends Simulation {
         } else if (priorityEntity instanceof Enemy) {
             // If the enemy has the priority
             attackSequence((Enemy) priorityEntity);
-        }else {
+        } else {
             throw new IllegalArgumentException("Invalid priority entity.");
         }
     }
@@ -426,11 +428,19 @@ public class AutoSimulation extends Simulation {
      *
      * @param player the Player engaging in the confrontation.
      */
-    public static void attackSequence(Player player){
+    public static void attackSequence(Player player) {
         boolean confrontationEnd = false;
 
-        while(!confrontationEnd){
-            boolean usedItem = getBestChoice(player.getBackpack().getBackpackSize() > 0, player.getLife());
+        while (!confrontationEnd) {
+            ArrayUnorderedList<Enemy> enemiesThatWillAttackPlayer = new ArrayUnorderedList<>();
+            for (Enemy enemy : player.getCurrentRoom().getEnemies()) {
+                if (enemy != null) {
+                    if (enemy.isAlive()) {
+                        enemiesThatWillAttackPlayer.addToRear(enemy);
+                    }
+                }
+            }
+            boolean usedItem = getBestChoice(player, enemiesThatWillAttackPlayer);
 
             if (!usedItem) {
                 player.attack();
@@ -445,24 +455,23 @@ public class AutoSimulation extends Simulation {
             }
 
             //attack all enemies in the room.
-            for(Enemy enemy : player.getCurrentRoom().getEnemies()){
-                if(enemy != null){
+            for (Enemy enemy : player.getCurrentRoom().getEnemies()) {
+                if (enemy != null) {
                     if (enemy.isAlive()) {
                         enemy.attack();
                     }
                 }
             }
 
-            if(!player.isAlive()){
+            if (!player.isAlive()) {
                 System.out.println("The Player Died, The Confrontation Ended");
                 confrontationEnd = true;
-            }else if(player.getCurrentRoom().getEnemies().isEmpty()){
+            } else if (player.getCurrentRoom().getEnemies().isEmpty()) {
                 System.out.println("All Enemies In The Room Died, The Confrontation Ended");
                 confrontationEnd = true;
             }
         }
     }
-
 
     /**
      * Handles the attack sequence during a confrontation when the Enemy has priority.
@@ -470,10 +479,10 @@ public class AutoSimulation extends Simulation {
      *
      * @param enemy the Enemy engaging in the confrontation.
      */
-    public static void attackSequence(Enemy enemy){
+    public static void attackSequence(Enemy enemy) {
         boolean confrontationEnd = false;
 
-        while(!confrontationEnd){
+        while (!confrontationEnd) {
             Player playerInTheRoom = enemy.getCurrentRoom().getPlayer();
 
             if (playerInTheRoom == null) {
@@ -489,7 +498,9 @@ public class AutoSimulation extends Simulation {
                 break;
             }
 
-            boolean usedItem = getBestChoice(playerInTheRoom.getBackpack().getBackpackSize() > 0, playerInTheRoom.getLife());
+            ArrayUnorderedList<Enemy> enemiesThatWillAttackPlayer = new ArrayUnorderedList<>();
+            enemiesThatWillAttackPlayer.addToRear(enemy);
+            boolean usedItem = getBestChoice(playerInTheRoom, enemiesThatWillAttackPlayer);
 
             if (!usedItem) {
                 playerInTheRoom.attack(enemy);
@@ -518,17 +529,39 @@ public class AutoSimulation extends Simulation {
 
     /**
      * Determines the best choice for the Player during an attack sequence.
-     * If the Player has items and low health, they prioritize using an item.
+     * If the Player has low health and possesses items, they prioritize using an item.
+     * The decision considers the Player's current health, the potential incoming
+     * damage from enemies, and the health regeneration provided by the top item
+     * in the Player's backpack.
      *
-     * @param hasItems true if the Player has items available in their backpack.
-     * @param playerLife the current life of the Player.
+     * @param player  the mission player whose decision is being evaluated.
+     * @param enemies the list of enemies attacking the player.
      * @return true if the Player should use an item, false otherwise.
      */
-    private static boolean getBestChoice(boolean hasItems, int playerLife) {
-        if(hasItems && playerLife < 50){
-            return true;
+    private static boolean getBestChoice(Player player, ArrayUnorderedList<Enemy> enemies) {
+        // If the player has more than 50 health points or the backpack is empty, don't use an item.
+        if (player.getLife() > 50 || player.getBackpack().getBackpackSize() == 0) {
+            return false;
         }
-        return false;
-    }
 
+        int potentialDamageIncoming = 0;
+
+        // Calculate the total potential damage from all enemies.
+        for (Enemy enemy : enemies) {
+            if (enemy != null) {
+                potentialDamageIncoming += enemy.getPower();
+            }
+        }
+
+        /*
+         If the health regenerated by the top item is less than or equal to the potential damage,
+         the player don't use the item.
+         */
+        if (player.getBackpack().getItemTop().getGivenPoints() <= potentialDamageIncoming) {
+            return false;
+        }
+
+        // Otherwise, prioritize using the item.
+        return true;
+    }
 }

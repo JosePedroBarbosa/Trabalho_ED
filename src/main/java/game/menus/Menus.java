@@ -29,9 +29,10 @@ public class Menus {
         System.out.println("================");
         System.out.println("  WELCOME BACK  ");
         System.out.println("================");
-        System.out.println("\nPRESS ENTER...");
+        System.out.print("\nPRESS ENTER...");
 
         scanner.nextLine();
+        System.out.println();
 
         ImportData importer = new ImportData();
 

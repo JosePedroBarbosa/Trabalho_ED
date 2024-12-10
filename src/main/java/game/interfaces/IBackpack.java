@@ -32,4 +32,10 @@ public interface IBackpack {
      * @return The number of items in the backpack.
      */
     public int getBackpackSize();
+
+    /**
+     * Returns the item on the top of the backpack
+     * @return the item in the top
+     */
+    public Item getItemTop();
 }
