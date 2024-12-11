@@ -60,8 +60,8 @@ public class AutoSimulation extends Simulation {
     private static void updateCurrentNetwork(Mission mission) {
         ArrayUnorderedList<Room> missionRooms = currentNetwork.getVertices();
 
-        for (int i = 1; i < missionRooms.size(); i++) {
-            Room currentRoom = missionRooms.getByIndex(i - 1);
+        for (int i = 0; i < missionRooms.size(); i++) {
+            Room currentRoom = missionRooms.getByIndex(i);  
             for (int j = 0; j < missionRooms.size(); j++) {
                 Room nextRoom = missionRooms.getByIndex(j);
                 // If there is a connection between the rooms
